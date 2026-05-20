@@ -1,0 +1,28 @@
+Add a new experiment entry to RESEARCH_LOG.md for the Price Forecasting project.
+
+## Steps
+
+1. Read `RESEARCH_LOG.md` to find the last EXP number and understand the current log structure.
+
+2. Read `data/processed/backtest_latest.json` to get the latest backtest results (written automatically by the revenue backtest cell in the notebook). This file contains the date the backtest was run and the full KPI table — no copy-paste needed.
+
+3. Read `config/config.yaml`, `src/models/trl_weekly_model.py`, `src/models/trl_daily_model.py`, `src/models/tre_model.py`, and `src/data/feature_store.py` to understand what changed since the last experiment entry — focus on FEATURE_COLS, model parameters, val splits, and feature engineering.
+
+4. Determine the next EXP number (last EXP + 1).
+
+5. Append a new experiment section to RESEARCH_LOG.md following the exact format of existing entries:
+   - `### EXP-NNN — <short title describing what changed>`
+   - `**Date:**` from backtest_latest.json
+   - `**Changes from EXP-NNN-1:**` bullet list of what changed (inferred from reading the code)
+   - `**Motivation:**` why the change was made (infer from the nature of the change, or ask the user if unclear)
+   - KPI table with columns: Market, capture_%, opt_select_%, opt_pnl/slot, oracle_pnl/slot, Δ capture vs previous EXP
+   - `**Notes:**` interpretation — flag small val sets (TRL Weekly ≈ 7 slots, TRE neg extreme ≈ 10 slots), note which improvements are reliable vs potentially noisy
+
+6. Check if any new design decisions or assumptions should be added to **Key Assumptions** or **Design Decisions**, and update if needed.
+
+7. If any open questions were resolved, update their status in the **Open Questions** table.
+
+8. If the user passed additional context or notes via `$ARGUMENTS`, incorporate them into the entry.
+
+Additional context from user (if any):
+$ARGUMENTS

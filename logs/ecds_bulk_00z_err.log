@@ -1,0 +1,724 @@
+2026-04-30 16:07:37  INFO      Source=ecds | 1581 date(s) × 1 run(s)
+2026-04-30 16:07:37  INFO      [ecds] 2022-01-01 00z — submitting ...
+2026-04-30 16:07:38,169 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-04-30 16:07:38  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-04-30 16:07:38,172 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-04-30 16:07:38  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-04-30 16:07:38,793 INFO Request ID is 34261316-4b12-42a4-ba98-d2e952322a71
+2026-04-30 16:07:38  INFO      Request ID is 34261316-4b12-42a4-ba98-d2e952322a71
+2026-04-30 16:07:38,933 INFO status has been updated to accepted
+2026-04-30 16:07:38  INFO      status has been updated to accepted
+2026-04-30 16:07:40,047 INFO status has been updated to running
+2026-04-30 16:07:40  INFO      status has been updated to running
+2026-04-30 16:36:13,220 INFO status has been updated to successful
+2026-04-30 16:36:13  INFO      status has been updated to successful
+2026-04-30 16:36:13  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/272d945d09ebd529bee77f487958478d.grib
+272d945d09ebd529bee77f487958478d.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]272d945d09ebd529bee77f487958478d.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.28MB/s]                                                                                           2026-04-30 16:36:14  INFO        Downloaded 1.3 MB  extracting ...
+2026-04-30 16:36:55  INFO        Extracted 63 feature rows
+2026-04-30 16:36:57  INFO      Saved 126 rows \u2192 weather_ensemble.parquet
+2026-04-30 16:36:57  INFO      [ecds] 2022-01-02 00z — submitting ...
+2026-04-30 16:36:57,852 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-04-30 16:36:57  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-04-30 16:36:57,853 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-04-30 16:36:57  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-04-30 16:36:58,063 INFO Request ID is 2a7e55d1-f2bb-474b-b65d-c03e40969a46
+2026-04-30 16:36:58  INFO      Request ID is 2a7e55d1-f2bb-474b-b65d-c03e40969a46
+2026-04-30 16:36:58,119 INFO status has been updated to accepted
+2026-04-30 16:36:58  INFO      status has been updated to accepted
+2026-04-30 16:36:59,244 INFO status has been updated to running
+2026-04-30 16:36:59  INFO      status has been updated to running
+2026-04-30 16:51:21,800 INFO status has been updated to successful
+2026-04-30 16:51:21  INFO      status has been updated to successful
+2026-04-30 16:51:22  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/b738533a72ac14c250d231666d608d42.grib
+b738533a72ac14c250d231666d608d42.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]b738533a72ac14c250d231666d608d42.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 835kB/s]                                                                                          2026-04-30 16:51:24  INFO        Downloaded 1.3 MB  extracting ...
+2026-04-30 16:51:54  INFO        Extracted 63 feature rows
+2026-04-30 16:51:54  INFO      Saved 189 rows \u2192 weather_ensemble.parquet
+2026-04-30 16:51:54  INFO      [ecds] 2022-01-03 00z — submitting ...
+2026-04-30 16:51:54,974 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-04-30 16:51:54  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-04-30 16:51:54,976 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-04-30 16:51:54  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-04-30 16:51:55,201 INFO Request ID is f4371828-07f7-4926-b6d8-84bbf53bbd80
+2026-04-30 16:51:55  INFO      Request ID is f4371828-07f7-4926-b6d8-84bbf53bbd80
+2026-04-30 16:51:55,341 INFO status has been updated to accepted
+2026-04-30 16:51:55  INFO      status has been updated to accepted
+2026-04-30 16:51:56,679 INFO status has been updated to running
+2026-04-30 16:51:56  INFO      status has been updated to running
+2026-04-30 17:06:18,515 INFO status has been updated to successful
+2026-04-30 17:06:18  INFO      status has been updated to successful
+2026-04-30 17:06:18  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/5cdcba1cca7958020c1e4b0e5de91faa.grib
+5cdcba1cca7958020c1e4b0e5de91faa.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]5cdcba1cca7958020c1e4b0e5de91faa.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.92MB/s]                                                                                           2026-04-30 17:06:19  INFO        Downloaded 1.3 MB  extracting ...
+2026-04-30 17:06:32  INFO        Extracted 63 feature rows
+2026-04-30 17:06:32  INFO      Saved 252 rows \u2192 weather_ensemble.parquet
+2026-04-30 17:06:32  INFO      [ecds] 2022-01-04 00z — submitting ...
+2026-04-30 17:06:33,299 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-04-30 17:06:33  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-04-30 17:06:33,303 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-04-30 17:06:33  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-04-30 17:06:33,610 INFO Request ID is 61265ecc-7cfa-4cbf-86bf-b7e149a65991
+2026-04-30 17:06:33  INFO      Request ID is 61265ecc-7cfa-4cbf-86bf-b7e149a65991
+2026-04-30 17:06:33,660 INFO status has been updated to accepted
+2026-04-30 17:06:33  INFO      status has been updated to accepted
+2026-04-30 17:06:34,695 INFO status has been updated to running
+2026-04-30 17:06:34  INFO      status has been updated to running
+2026-05-01 08:47:20  WARNING   Recovering from connection error [HTTPSConnectionPool(host='ecds-test.ecmwf.int', port=443): Max retries exceeded with url: /api/retrieve/v1/jobs/61265ecc-7cfa-4cbf-86bf-b7e149a65991?log=True&request=True (Caused by NameResolutionError("HTTPSConnection(host='ecds-test.ecmwf.int', port=443): Failed to resolve 'ecds-test.ecmwf.int' ([Errno 11001] getaddrinfo failed)"))], attempt 1 of 500
+2026-05-01 08:47:20  WARNING   Retrying in 120 seconds
+2026-05-01 08:49:20  INFO      Retrying now...
+2026-05-01 08:49:21,588 INFO status has been updated to successful
+2026-05-01 08:49:21  INFO      status has been updated to successful
+2026-05-01 08:49:21  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/a3e71af5c9637621007acbe756749dc6.grib
+a3e71af5c9637621007acbe756749dc6.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]a3e71af5c9637621007acbe756749dc6.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 934kB/s]a3e71af5c9637621007acbe756749dc6.grib: 100%|##########| 1.21M/1.21M [00:01<00:00, 1.05MB/s]                                                                                           2026-05-01 08:49:23  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-01 08:49:40  INFO        Extracted 63 feature rows
+2026-05-01 08:49:40  INFO      Saved 315 rows \u2192 weather_ensemble.parquet
+2026-05-01 08:49:40  INFO      [ecds] 2022-01-05 00z — submitting ...
+2026-05-01 08:49:41,359 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-01 08:49:41  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-01 08:49:41,361 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-01 08:49:41  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-01 08:49:41,693 INFO Request ID is 494a0ce7-254c-4e96-bef5-4f9669f3ec61
+2026-05-01 08:49:41  INFO      Request ID is 494a0ce7-254c-4e96-bef5-4f9669f3ec61
+2026-05-01 08:49:41,758 INFO status has been updated to accepted
+2026-05-01 08:49:41  INFO      status has been updated to accepted
+2026-05-01 08:49:42,913 INFO status has been updated to running
+2026-05-01 08:49:42  INFO      status has been updated to running
+2026-05-01 12:04:23,383 INFO status has been updated to successful
+2026-05-01 12:04:23  INFO      status has been updated to successful
+2026-05-01 12:04:23  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/eac192e705e988b1bce9b8a5d01cf1e1.grib
+eac192e705e988b1bce9b8a5d01cf1e1.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]eac192e705e988b1bce9b8a5d01cf1e1.grib:  83%|########2 | 1.00M/1.21M [00:02<00:00, 457kB/s]                                                                                          2026-05-01 12:04:27  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-01 12:05:14  INFO        Extracted 63 feature rows
+2026-05-01 12:05:14  INFO      Saved 378 rows \u2192 weather_ensemble.parquet
+2026-05-01 12:05:14  INFO      [ecds] 2022-01-06 00z — submitting ...
+2026-05-01 12:05:15,649 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-01 12:05:15  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-01 12:05:15,651 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-01 12:05:15  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-01 12:05:15,995 INFO Request ID is e8465f95-faaa-4eb9-ab33-f6ecd86b752d
+2026-05-01 12:05:15  INFO      Request ID is e8465f95-faaa-4eb9-ab33-f6ecd86b752d
+2026-05-01 12:05:16,075 INFO status has been updated to accepted
+2026-05-01 12:05:16  INFO      status has been updated to accepted
+2026-05-01 12:05:17,379 INFO status has been updated to running
+2026-05-01 12:05:17  INFO      status has been updated to running
+2026-05-01 23:24:54,122 INFO status has been updated to successful
+2026-05-01 23:24:54  INFO      status has been updated to successful
+2026-05-01 23:24:54  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/76a98e7e54b10b8292084c86d7c54324.grib
+76a98e7e54b10b8292084c86d7c54324.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]76a98e7e54b10b8292084c86d7c54324.grib:  83%|########2 | 1.00M/1.21M [00:02<00:00, 468kB/s]                                                                                          2026-05-01 23:24:57  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-01 23:25:58  INFO        Extracted 63 feature rows
+2026-05-01 23:25:58  INFO      Saved 441 rows \u2192 weather_ensemble.parquet
+2026-05-01 23:25:58  INFO      [ecds] 2022-01-07 00z — submitting ...
+2026-05-01 23:25:59,199 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-01 23:25:59  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-01 23:25:59,200 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-01 23:25:59  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-01 23:25:59,521 INFO Request ID is 60642edb-28c0-4995-8ae9-d4971bcc1433
+2026-05-01 23:25:59  INFO      Request ID is 60642edb-28c0-4995-8ae9-d4971bcc1433
+2026-05-01 23:25:59,630 INFO status has been updated to accepted
+2026-05-01 23:25:59  INFO      status has been updated to accepted
+2026-05-01 23:26:00,866 INFO status has been updated to running
+2026-05-01 23:26:00  INFO      status has been updated to running
+2026-05-02 03:24:11  WARNING   Recovering from connection error [HTTPSConnectionPool(host='ecds-test.ecmwf.int', port=443): Max retries exceeded with url: /api/retrieve/v1/jobs/60642edb-28c0-4995-8ae9-d4971bcc1433?log=True&request=True (Caused by NameResolutionError("HTTPSConnection(host='ecds-test.ecmwf.int', port=443): Failed to resolve 'ecds-test.ecmwf.int' ([Errno 11001] getaddrinfo failed)"))], attempt 1 of 500
+2026-05-02 03:24:11  WARNING   Retrying in 120 seconds
+2026-05-03 09:40:21  INFO      Retrying now...
+2026-05-03 09:40:22,480 INFO status has been updated to successful
+2026-05-03 09:40:22  INFO      status has been updated to successful
+2026-05-03 09:40:22  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/5745bdbab2a59244acf2abc584d19aa.grib
+5745bdbab2a59244acf2abc584d19aa.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]5745bdbab2a59244acf2abc584d19aa.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.06MB/s]                                                                                          2026-05-03 09:40:24  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 09:41:00  INFO        Extracted 63 feature rows
+2026-05-03 09:41:00  INFO      Saved 504 rows \u2192 weather_ensemble.parquet
+2026-05-03 09:41:00  INFO      [ecds] 2022-01-08 00z — submitting ...
+2026-05-03 09:41:01,730 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 09:41:01  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 09:41:01,733 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 09:41:01  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 09:41:02,258 INFO Request ID is 3447e473-fadf-4886-9617-cc9a3a4077af
+2026-05-03 09:41:02  INFO      Request ID is 3447e473-fadf-4886-9617-cc9a3a4077af
+2026-05-03 09:41:02,367 INFO status has been updated to accepted
+2026-05-03 09:41:02  INFO      status has been updated to accepted
+2026-05-03 09:41:03,480 INFO status has been updated to running
+2026-05-03 09:41:03  INFO      status has been updated to running
+2026-05-03 09:55:26,520 INFO status has been updated to successful
+2026-05-03 09:55:26  INFO      status has been updated to successful
+2026-05-03 09:55:26  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/5885aeea2d025ffcbcd91d8064016d5.grib
+5885aeea2d025ffcbcd91d8064016d5.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]5885aeea2d025ffcbcd91d8064016d5.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.07MB/s]                                                                                          2026-05-03 09:55:28  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 09:55:59  INFO        Extracted 63 feature rows
+2026-05-03 09:55:59  INFO      Saved 567 rows \u2192 weather_ensemble.parquet
+2026-05-03 09:55:59  INFO      [ecds] 2022-01-09 00z — submitting ...
+2026-05-03 09:56:00,243 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 09:56:00  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 09:56:00,244 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 09:56:00  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 09:56:00,496 INFO Request ID is 4a3222b6-97d1-4ab1-9578-ef596a955265
+2026-05-03 09:56:00  INFO      Request ID is 4a3222b6-97d1-4ab1-9578-ef596a955265
+2026-05-03 09:56:00,552 INFO status has been updated to accepted
+2026-05-03 09:56:00  INFO      status has been updated to accepted
+2026-05-03 09:56:01,606 INFO status has been updated to running
+2026-05-03 09:56:01  INFO      status has been updated to running
+2026-05-03 10:20:27,553 INFO status has been updated to successful
+2026-05-03 10:20:27  INFO      status has been updated to successful
+2026-05-03 10:20:27  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/4fb153f864470f9ff3b9783ab8c9a73e.grib
+4fb153f864470f9ff3b9783ab8c9a73e.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]4fb153f864470f9ff3b9783ab8c9a73e.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.23MB/s]                                                                                           2026-05-03 10:20:29  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 10:20:53  INFO        Extracted 63 feature rows
+2026-05-03 10:20:53  INFO      Saved 630 rows \u2192 weather_ensemble.parquet
+2026-05-03 10:20:53  INFO      [ecds] 2022-01-10 00z — submitting ...
+2026-05-03 10:20:54,180 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 10:20:54  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 10:20:54,182 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 10:20:54  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 10:20:54,488 INFO Request ID is 114713aa-0590-472c-b6d0-fa086f928d1f
+2026-05-03 10:20:54  INFO      Request ID is 114713aa-0590-472c-b6d0-fa086f928d1f
+2026-05-03 10:20:54,612 INFO status has been updated to accepted
+2026-05-03 10:20:54  INFO      status has been updated to accepted
+2026-05-03 10:20:55,768 INFO status has been updated to running
+2026-05-03 10:20:55  INFO      status has been updated to running
+2026-05-03 10:39:20,176 INFO status has been updated to successful
+2026-05-03 10:39:20  INFO      status has been updated to successful
+2026-05-03 10:39:20  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/34318205411113a15f962756852ceb52.grib
+34318205411113a15f962756852ceb52.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]34318205411113a15f962756852ceb52.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 1.04MB/s]                                                                                           2026-05-03 10:39:22  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 10:39:50  INFO        Extracted 63 feature rows
+2026-05-03 10:39:50  INFO      Saved 693 rows \u2192 weather_ensemble.parquet
+2026-05-03 10:39:50  INFO      [ecds] 2022-01-11 00z — submitting ...
+2026-05-03 10:39:51,090 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 10:39:51  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 10:39:51,091 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 10:39:51  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 10:39:51,413 INFO Request ID is dc9e7fbb-9f5e-4c50-a7af-731865e3fdbd
+2026-05-03 10:39:51  INFO      Request ID is dc9e7fbb-9f5e-4c50-a7af-731865e3fdbd
+2026-05-03 10:39:51,464 INFO status has been updated to accepted
+2026-05-03 10:39:51  INFO      status has been updated to accepted
+2026-05-03 10:39:52,545 INFO status has been updated to running
+2026-05-03 10:39:52  INFO      status has been updated to running
+2026-05-03 10:54:15,204 INFO status has been updated to successful
+2026-05-03 10:54:15  INFO      status has been updated to successful
+2026-05-03 10:54:15  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/ca27c89efd06986bef4524599237783d.grib
+ca27c89efd06986bef4524599237783d.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]ca27c89efd06986bef4524599237783d.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.12MB/s]                                                                                           2026-05-03 10:54:16  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 10:54:42  INFO        Extracted 63 feature rows
+2026-05-03 10:54:42  INFO      Saved 756 rows \u2192 weather_ensemble.parquet
+2026-05-03 10:54:42  INFO      [ecds] 2022-01-12 00z — submitting ...
+2026-05-03 10:54:42,749 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 10:54:42  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 10:54:42,750 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 10:54:42  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 10:54:43,019 INFO Request ID is 26e0a16b-df15-4def-8c26-79ca629eac09
+2026-05-03 10:54:43  INFO      Request ID is 26e0a16b-df15-4def-8c26-79ca629eac09
+2026-05-03 10:54:43,191 INFO status has been updated to accepted
+2026-05-03 10:54:43  INFO      status has been updated to accepted
+2026-05-03 10:54:44,315 INFO status has been updated to running
+2026-05-03 10:54:44  INFO      status has been updated to running
+2026-05-03 11:11:07,173 INFO status has been updated to successful
+2026-05-03 11:11:07  INFO      status has been updated to successful
+2026-05-03 11:11:07  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/8a1fc737d991663ac193724ec0d3c575.grib
+8a1fc737d991663ac193724ec0d3c575.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]8a1fc737d991663ac193724ec0d3c575.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.24MB/s]                                                                                           2026-05-03 11:11:08  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 11:11:34  INFO        Extracted 63 feature rows
+2026-05-03 11:11:34  INFO      Saved 819 rows \u2192 weather_ensemble.parquet
+2026-05-03 11:11:34  INFO      [ecds] 2022-01-13 00z — submitting ...
+2026-05-03 11:11:34,701 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 11:11:34  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 11:11:34,703 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 11:11:34  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 11:11:35,197 INFO Request ID is 0a417bf8-15dd-4404-b715-8656e0737146
+2026-05-03 11:11:35  INFO      Request ID is 0a417bf8-15dd-4404-b715-8656e0737146
+2026-05-03 11:11:35,247 INFO status has been updated to accepted
+2026-05-03 11:11:35  INFO      status has been updated to accepted
+2026-05-03 11:11:36,324 INFO status has been updated to running
+2026-05-03 11:11:36  INFO      status has been updated to running
+2026-05-03 11:25:58,869 INFO status has been updated to successful
+2026-05-03 11:25:58  INFO      status has been updated to successful
+2026-05-03 11:25:59  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/e913895f0796f40ccc59e3d155b437e2.grib
+e913895f0796f40ccc59e3d155b437e2.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]e913895f0796f40ccc59e3d155b437e2.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 926kB/s]                                                                                          2026-05-03 11:26:00  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 11:26:26  INFO        Extracted 63 feature rows
+2026-05-03 11:26:26  INFO      Saved 882 rows \u2192 weather_ensemble.parquet
+2026-05-03 11:26:26  INFO      [ecds] 2022-01-14 00z — submitting ...
+2026-05-03 11:26:27,069 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 11:26:27  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 11:26:27,070 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 11:26:27  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 11:26:27,343 INFO Request ID is a50da207-408b-4371-9a37-3c2903537981
+2026-05-03 11:26:27  INFO      Request ID is a50da207-408b-4371-9a37-3c2903537981
+2026-05-03 11:26:27,407 INFO status has been updated to accepted
+2026-05-03 11:26:27  INFO      status has been updated to accepted
+2026-05-03 11:26:28,469 INFO status has been updated to running
+2026-05-03 11:26:28  INFO      status has been updated to running
+2026-05-03 11:44:52,327 INFO status has been updated to successful
+2026-05-03 11:44:52  INFO      status has been updated to successful
+2026-05-03 11:44:52  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/ee6937283911c6f873a24a6e101bed9a.grib
+ee6937283911c6f873a24a6e101bed9a.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]ee6937283911c6f873a24a6e101bed9a.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.25MB/s]                                                                                           2026-05-03 11:44:54  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 11:45:20  INFO        Extracted 63 feature rows
+2026-05-03 11:45:20  INFO      Saved 945 rows \u2192 weather_ensemble.parquet
+2026-05-03 11:45:20  INFO      [ecds] 2022-01-15 00z — submitting ...
+2026-05-03 11:45:21,798 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 11:45:21  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 11:45:21,799 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 11:45:21  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 11:45:22,057 INFO Request ID is 45ba5a84-9bc7-4001-9fec-55d2a912da4c
+2026-05-03 11:45:22  INFO      Request ID is 45ba5a84-9bc7-4001-9fec-55d2a912da4c
+2026-05-03 11:45:22,120 INFO status has been updated to accepted
+2026-05-03 11:45:22  INFO      status has been updated to accepted
+2026-05-03 11:45:23,180 INFO status has been updated to running
+2026-05-03 11:45:23  INFO      status has been updated to running
+2026-05-03 11:57:44,981 INFO status has been updated to successful
+2026-05-03 11:57:44  INFO      status has been updated to successful
+2026-05-03 11:57:45  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/f1e09af713fa7ba0cbbeb48f33325022.grib
+f1e09af713fa7ba0cbbeb48f33325022.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]f1e09af713fa7ba0cbbeb48f33325022.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 855kB/s]                                                                                          2026-05-03 11:57:47  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 11:58:14  INFO        Extracted 63 feature rows
+2026-05-03 11:58:14  INFO      Saved 1008 rows \u2192 weather_ensemble.parquet
+2026-05-03 11:58:14  INFO      [ecds] 2022-01-16 00z — submitting ...
+2026-05-03 11:58:15,106 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 11:58:15  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 11:58:15,108 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 11:58:15  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 11:58:15,449 INFO Request ID is 593070aa-be65-4f2d-a875-a2a009926e23
+2026-05-03 11:58:15  INFO      Request ID is 593070aa-be65-4f2d-a875-a2a009926e23
+2026-05-03 11:58:15,497 INFO status has been updated to accepted
+2026-05-03 11:58:15  INFO      status has been updated to accepted
+2026-05-03 11:58:16,557 INFO status has been updated to running
+2026-05-03 11:58:16  INFO      status has been updated to running
+2026-05-03 12:12:39,466 INFO status has been updated to successful
+2026-05-03 12:12:39  INFO      status has been updated to successful
+2026-05-03 12:12:39  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/924a5d7801c8dec19ec33d9ccaaa2595.grib
+924a5d7801c8dec19ec33d9ccaaa2595.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]924a5d7801c8dec19ec33d9ccaaa2595.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 941kB/s]924a5d7801c8dec19ec33d9ccaaa2595.grib: 100%|##########| 1.21M/1.21M [00:01<00:00, 1.08MB/s]                                                                                           2026-05-03 12:12:41  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 12:13:06  INFO        Extracted 63 feature rows
+2026-05-03 12:13:06  INFO      Saved 1071 rows \u2192 weather_ensemble.parquet
+2026-05-03 12:13:06  INFO      [ecds] 2022-01-17 00z — submitting ...
+2026-05-03 12:13:07,554 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 12:13:07  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 12:13:07,555 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 12:13:07  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 12:13:08,036 INFO Request ID is 26c6105c-ed52-4875-8b12-6b2e4d07f5fe
+2026-05-03 12:13:08  INFO      Request ID is 26c6105c-ed52-4875-8b12-6b2e4d07f5fe
+2026-05-03 12:13:08,097 INFO status has been updated to accepted
+2026-05-03 12:13:08  INFO      status has been updated to accepted
+2026-05-03 12:13:09,228 INFO status has been updated to running
+2026-05-03 12:13:09  INFO      status has been updated to running
+2026-05-03 12:25:30,961 INFO status has been updated to successful
+2026-05-03 12:25:30  INFO      status has been updated to successful
+2026-05-03 12:25:31  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/b4829b553c86b4dfb53bc931fd4de802.grib
+b4829b553c86b4dfb53bc931fd4de802.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]b4829b553c86b4dfb53bc931fd4de802.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 818kB/s]b4829b553c86b4dfb53bc931fd4de802.grib: 100%|##########| 1.21M/1.21M [00:01<00:00, 946kB/s]                                                                                          2026-05-03 12:25:33  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 12:25:58  INFO        Extracted 63 feature rows
+2026-05-03 12:25:58  INFO      Saved 1134 rows \u2192 weather_ensemble.parquet
+2026-05-03 12:25:58  INFO      [ecds] 2022-01-18 00z — submitting ...
+2026-05-03 12:25:59,617 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 12:25:59  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 12:25:59,619 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 12:25:59  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 12:25:59,944 INFO Request ID is a65fcd48-b33f-44c3-b815-6cd67732fbce
+2026-05-03 12:25:59  INFO      Request ID is a65fcd48-b33f-44c3-b815-6cd67732fbce
+2026-05-03 12:26:00,051 INFO status has been updated to accepted
+2026-05-03 12:26:00  INFO      status has been updated to accepted
+2026-05-03 12:26:01,111 INFO status has been updated to running
+2026-05-03 12:26:01  INFO      status has been updated to running
+2026-05-03 12:40:24,541 INFO status has been updated to successful
+2026-05-03 12:40:24  INFO      status has been updated to successful
+2026-05-03 12:40:24  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/9039d3df500bac8bfb611c08660e57fd.grib
+9039d3df500bac8bfb611c08660e57fd.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]9039d3df500bac8bfb611c08660e57fd.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.24MB/s]                                                                                           2026-05-03 12:40:26  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 12:40:51  INFO        Extracted 63 feature rows
+2026-05-03 12:40:51  INFO      Saved 1197 rows \u2192 weather_ensemble.parquet
+2026-05-03 12:40:51  INFO      [ecds] 2022-01-19 00z — submitting ...
+2026-05-03 12:40:52,365 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 12:40:52  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 12:40:52,366 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 12:40:52  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 12:40:52,634 INFO Request ID is 5c000215-3dee-418d-b76b-1d15db16bfac
+2026-05-03 12:40:52  INFO      Request ID is 5c000215-3dee-418d-b76b-1d15db16bfac
+2026-05-03 12:40:52,698 INFO status has been updated to accepted
+2026-05-03 12:40:52  INFO      status has been updated to accepted
+2026-05-03 12:40:53,757 INFO status has been updated to running
+2026-05-03 12:40:53  INFO      status has been updated to running
+2026-05-03 12:57:17,019 INFO status has been updated to successful
+2026-05-03 12:57:17  INFO      status has been updated to successful
+2026-05-03 12:57:17  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/b4435a44caec500de42abf79cee22d82.grib
+b4435a44caec500de42abf79cee22d82.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]b4435a44caec500de42abf79cee22d82.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 1.01MB/s]                                                                                           2026-05-03 12:57:18  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 12:57:44  INFO        Extracted 63 feature rows
+2026-05-03 12:57:44  INFO      Saved 1260 rows \u2192 weather_ensemble.parquet
+2026-05-03 12:57:44  INFO      [ecds] 2022-01-20 00z — submitting ...
+2026-05-03 12:57:45,414 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 12:57:45  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 12:57:45,415 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 12:57:45  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 12:57:45,714 INFO Request ID is 33c2be5c-df88-4390-99ec-4391d67c5785
+2026-05-03 12:57:45  INFO      Request ID is 33c2be5c-df88-4390-99ec-4391d67c5785
+2026-05-03 12:57:45,757 INFO status has been updated to accepted
+2026-05-03 12:57:45  INFO      status has been updated to accepted
+2026-05-03 12:57:46,815 INFO status has been updated to running
+2026-05-03 12:57:46  INFO      status has been updated to running
+2026-05-03 13:12:08,924 INFO status has been updated to successful
+2026-05-03 13:12:08  INFO      status has been updated to successful
+2026-05-03 13:12:09  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/a0aa73dadb9961f426010ea8d3161d19.grib
+a0aa73dadb9961f426010ea8d3161d19.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]a0aa73dadb9961f426010ea8d3161d19.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.08MB/s]                                                                                           2026-05-03 13:12:10  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 13:12:37  INFO        Extracted 63 feature rows
+2026-05-03 13:12:37  INFO      Saved 1323 rows \u2192 weather_ensemble.parquet
+2026-05-03 13:12:37  INFO      [ecds] 2022-01-21 00z — submitting ...
+2026-05-03 13:12:38,212 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 13:12:38  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 13:12:38,214 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 13:12:38  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 13:12:38,592 INFO Request ID is bfd48b68-7b54-4132-bfde-b3ab219e6a6f
+2026-05-03 13:12:38  INFO      Request ID is bfd48b68-7b54-4132-bfde-b3ab219e6a6f
+2026-05-03 13:12:38,731 INFO status has been updated to accepted
+2026-05-03 13:12:38  INFO      status has been updated to accepted
+2026-05-03 13:12:39,773 INFO status has been updated to running
+2026-05-03 13:12:39  INFO      status has been updated to running
+2026-05-03 13:27:03,058 INFO status has been updated to successful
+2026-05-03 13:27:03  INFO      status has been updated to successful
+2026-05-03 13:27:03  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/91e81222e06852d976231490c404a30a.grib
+91e81222e06852d976231490c404a30a.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]91e81222e06852d976231490c404a30a.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 991kB/s]91e81222e06852d976231490c404a30a.grib: 100%|##########| 1.21M/1.21M [00:01<00:00, 1.10MB/s]                                                                                           2026-05-03 13:27:05  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 13:27:31  INFO        Extracted 63 feature rows
+2026-05-03 13:27:31  INFO      Saved 1386 rows \u2192 weather_ensemble.parquet
+2026-05-03 13:27:31  INFO      [ecds] 2022-01-22 00z — submitting ...
+2026-05-03 13:27:32,041 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 13:27:32  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 13:27:32,043 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 13:27:32  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 13:27:32,259 INFO Request ID is f0ec9350-13be-4b7f-9068-4dc8e3b07f2b
+2026-05-03 13:27:32  INFO      Request ID is f0ec9350-13be-4b7f-9068-4dc8e3b07f2b
+2026-05-03 13:27:32,323 INFO status has been updated to accepted
+2026-05-03 13:27:32  INFO      status has been updated to accepted
+2026-05-03 13:27:33,386 INFO status has been updated to running
+2026-05-03 13:27:33  INFO      status has been updated to running
+2026-05-03 13:43:56,436 INFO status has been updated to successful
+2026-05-03 13:43:56  INFO      status has been updated to successful
+2026-05-03 13:43:56  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/db2c3742d8e25386fe25b9252fee9c89.grib
+db2c3742d8e25386fe25b9252fee9c89.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]db2c3742d8e25386fe25b9252fee9c89.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.17MB/s]                                                                                           2026-05-03 13:43:58  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 13:44:25  INFO        Extracted 63 feature rows
+2026-05-03 13:44:25  INFO      Saved 1449 rows \u2192 weather_ensemble.parquet
+2026-05-03 13:44:25  INFO      [ecds] 2022-01-23 00z — submitting ...
+2026-05-03 13:44:26,733 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 13:44:26  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 13:44:26,735 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 13:44:26  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 13:44:27,220 INFO Request ID is f54d3898-5887-46fa-b912-a34c0ba9b2ab
+2026-05-03 13:44:27  INFO      Request ID is f54d3898-5887-46fa-b912-a34c0ba9b2ab
+2026-05-03 13:44:27,353 INFO status has been updated to accepted
+2026-05-03 13:44:27  INFO      status has been updated to accepted
+2026-05-03 13:44:28,447 INFO status has been updated to running
+2026-05-03 13:44:28  INFO      status has been updated to running
+2026-05-03 13:58:51,815 INFO status has been updated to successful
+2026-05-03 13:58:51  INFO      status has been updated to successful
+2026-05-03 13:58:52  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/2dfb25ff0f0e0acf85b819763121f11a.grib
+2dfb25ff0f0e0acf85b819763121f11a.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]2dfb25ff0f0e0acf85b819763121f11a.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.15MB/s]                                                                                           2026-05-03 13:58:53  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 13:59:21  INFO        Extracted 63 feature rows
+2026-05-03 13:59:21  INFO      Saved 1512 rows \u2192 weather_ensemble.parquet
+2026-05-03 13:59:21  INFO      [ecds] 2022-01-24 00z — submitting ...
+2026-05-03 13:59:22,205 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 13:59:22  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 13:59:22,206 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 13:59:22  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 13:59:22,625 INFO Request ID is 3b654d52-263f-4baa-9aa7-dd675a0e4387
+2026-05-03 13:59:22  INFO      Request ID is 3b654d52-263f-4baa-9aa7-dd675a0e4387
+2026-05-03 13:59:22,762 INFO status has been updated to accepted
+2026-05-03 13:59:22  INFO      status has been updated to accepted
+2026-05-03 13:59:23,805 INFO status has been updated to running
+2026-05-03 13:59:23  INFO      status has been updated to running
+2026-05-03 14:13:46,084 INFO status has been updated to successful
+2026-05-03 14:13:46  INFO      status has been updated to successful
+2026-05-03 14:13:46  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/a99ad05a8f1c212c073c10ff5362c88e.grib
+a99ad05a8f1c212c073c10ff5362c88e.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]a99ad05a8f1c212c073c10ff5362c88e.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 998kB/s]                                                                                          2026-05-03 14:13:48  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 14:14:15  INFO        Extracted 63 feature rows
+2026-05-03 14:14:15  INFO      Saved 1575 rows \u2192 weather_ensemble.parquet
+2026-05-03 14:14:15  INFO      [ecds] 2022-01-25 00z — submitting ...
+2026-05-03 14:14:16,203 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 14:14:16  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 14:14:16,205 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 14:14:16  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 14:14:16,571 INFO Request ID is f0add6a2-eb71-42bf-ba10-d50fb40be926
+2026-05-03 14:14:16  INFO      Request ID is f0add6a2-eb71-42bf-ba10-d50fb40be926
+2026-05-03 14:14:16,696 INFO status has been updated to accepted
+2026-05-03 14:14:16  INFO      status has been updated to accepted
+2026-05-03 14:14:17,811 INFO status has been updated to running
+2026-05-03 14:14:17  INFO      status has been updated to running
+2026-05-03 14:28:39,922 INFO status has been updated to successful
+2026-05-03 14:28:39  INFO      status has been updated to successful
+2026-05-03 14:28:40  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/48ee9b0e90221f596973a0ed5bbb4242.grib
+48ee9b0e90221f596973a0ed5bbb4242.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]48ee9b0e90221f596973a0ed5bbb4242.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.05MB/s]                                                                                           2026-05-03 14:28:41  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 14:29:08  INFO        Extracted 63 feature rows
+2026-05-03 14:29:08  INFO      Saved 1638 rows \u2192 weather_ensemble.parquet
+2026-05-03 14:29:08  INFO      [ecds] 2022-01-26 00z — submitting ...
+2026-05-03 14:29:09,454 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 14:29:09  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 14:29:09,457 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 14:29:09  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 14:29:09,746 INFO Request ID is 6e59742d-3f2c-4d0a-8afc-b91fabc64316
+2026-05-03 14:29:09  INFO      Request ID is 6e59742d-3f2c-4d0a-8afc-b91fabc64316
+2026-05-03 14:29:09,789 INFO status has been updated to accepted
+2026-05-03 14:29:09  INFO      status has been updated to accepted
+2026-05-03 14:29:10,846 INFO status has been updated to running
+2026-05-03 14:29:10  INFO      status has been updated to running
+2026-05-03 14:43:33,956 INFO status has been updated to successful
+2026-05-03 14:43:33  INFO      status has been updated to successful
+2026-05-03 14:43:34  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/6a229b1c5c5fd72c4aba0b9e3ffb0ae0.grib
+6a229b1c5c5fd72c4aba0b9e3ffb0ae0.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]6a229b1c5c5fd72c4aba0b9e3ffb0ae0.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 533kB/s]6a229b1c5c5fd72c4aba0b9e3ffb0ae0.grib: 100%|##########| 1.21M/1.21M [00:02<00:00, 617kB/s]                                                                                          2026-05-03 14:43:37  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 14:44:03  INFO        Extracted 63 feature rows
+2026-05-03 14:44:03  INFO      Saved 1701 rows \u2192 weather_ensemble.parquet
+2026-05-03 14:44:03  INFO      [ecds] 2022-01-27 00z — submitting ...
+2026-05-03 14:44:04,333 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 14:44:04  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 14:44:04,335 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 14:44:04  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 14:44:04,592 INFO Request ID is 1e64f8ea-b49c-4df3-b9f3-18a3e35f20d1
+2026-05-03 14:44:04  INFO      Request ID is 1e64f8ea-b49c-4df3-b9f3-18a3e35f20d1
+2026-05-03 14:44:04,656 INFO status has been updated to accepted
+2026-05-03 14:44:04  INFO      status has been updated to accepted
+2026-05-03 14:44:05,714 INFO status has been updated to running
+2026-05-03 14:44:05  INFO      status has been updated to running
+2026-05-03 15:00:31,288 INFO status has been updated to successful
+2026-05-03 15:00:31  INFO      status has been updated to successful
+2026-05-03 15:00:31  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/5aabf0d43d99824bc5d96cb4746dc131.grib
+5aabf0d43d99824bc5d96cb4746dc131.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]5aabf0d43d99824bc5d96cb4746dc131.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 1.02MB/s]                                                                                           2026-05-03 15:00:33  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 15:01:00  INFO        Extracted 63 feature rows
+2026-05-03 15:01:00  INFO      Saved 1764 rows \u2192 weather_ensemble.parquet
+2026-05-03 15:01:00  INFO      [ecds] 2022-01-28 00z — submitting ...
+2026-05-03 15:01:00,861 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 15:01:00  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 15:01:00,862 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 15:01:00  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 15:01:01,249 INFO Request ID is b6de3584-abb5-4898-8500-895279fa3c9c
+2026-05-03 15:01:01  INFO      Request ID is b6de3584-abb5-4898-8500-895279fa3c9c
+2026-05-03 15:01:01,361 INFO status has been updated to accepted
+2026-05-03 15:01:01  INFO      status has been updated to accepted
+2026-05-03 15:01:02,405 INFO status has been updated to running
+2026-05-03 15:01:02  INFO      status has been updated to running
+2026-05-03 15:15:25,275 INFO status has been updated to successful
+2026-05-03 15:15:25  INFO      status has been updated to successful
+2026-05-03 15:15:25  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/3c0e3765c8d75f7d1b2de810cb9890b2.grib
+3c0e3765c8d75f7d1b2de810cb9890b2.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]3c0e3765c8d75f7d1b2de810cb9890b2.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.06MB/s]                                                                                           2026-05-03 15:15:27  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 15:15:56  INFO        Extracted 63 feature rows
+2026-05-03 15:15:56  INFO      Saved 1827 rows \u2192 weather_ensemble.parquet
+2026-05-03 15:15:56  INFO      [ecds] 2022-01-29 00z — submitting ...
+2026-05-03 15:15:57,738 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 15:15:57  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 15:15:57,739 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 15:15:57  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 15:15:58,216 INFO Request ID is 6df5169a-a1a8-4db4-9878-fb20c9e0a721
+2026-05-03 15:15:58  INFO      Request ID is 6df5169a-a1a8-4db4-9878-fb20c9e0a721
+2026-05-03 15:15:58,260 INFO status has been updated to accepted
+2026-05-03 15:15:58  INFO      status has been updated to accepted
+2026-05-03 15:15:59,325 INFO status has been updated to running
+2026-05-03 15:15:59  INFO      status has been updated to running
+2026-05-03 15:28:21,245 INFO status has been updated to successful
+2026-05-03 15:28:21  INFO      status has been updated to successful
+2026-05-03 15:28:21  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/78840be4f91b0dc9f34b635a1b8e20c6.grib
+78840be4f91b0dc9f34b635a1b8e20c6.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]78840be4f91b0dc9f34b635a1b8e20c6.grib:  83%|########2 | 1.00M/1.21M [00:05<00:01, 202kB/s]78840be4f91b0dc9f34b635a1b8e20c6.grib: 100%|##########| 1.21M/1.21M [00:05<00:00, 252kB/s]                                                                                          2026-05-03 15:28:27  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 15:28:58  INFO        Extracted 63 feature rows
+2026-05-03 15:28:58  INFO      Saved 1890 rows \u2192 weather_ensemble.parquet
+2026-05-03 15:28:58  INFO      [ecds] 2022-01-30 00z — submitting ...
+2026-05-03 15:28:59,340 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 15:28:59  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 15:28:59,341 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 15:28:59  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 15:29:00,189 INFO Request ID is 71f4dd73-43fb-46ae-b546-9331f79e2bdf
+2026-05-03 15:29:00  INFO      Request ID is 71f4dd73-43fb-46ae-b546-9331f79e2bdf
+2026-05-03 15:29:00,322 INFO status has been updated to accepted
+2026-05-03 15:29:00  INFO      status has been updated to accepted
+2026-05-03 15:29:01,449 INFO status has been updated to running
+2026-05-03 15:29:01  INFO      status has been updated to running
+2026-05-03 15:43:24,518 INFO status has been updated to successful
+2026-05-03 15:43:24  INFO      status has been updated to successful
+2026-05-03 15:43:24  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/2efb1908afc9cbeb462458562cae8983.grib
+2efb1908afc9cbeb462458562cae8983.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]2efb1908afc9cbeb462458562cae8983.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 780kB/s]                                                                                          2026-05-03 15:43:27  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 15:43:57  INFO        Extracted 63 feature rows
+2026-05-03 15:43:57  INFO      Saved 1953 rows \u2192 weather_ensemble.parquet
+2026-05-03 15:43:57  INFO      [ecds] 2022-01-31 00z — submitting ...
+2026-05-03 15:43:58,336 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 15:43:58  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 15:43:58,338 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 15:43:58  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 15:43:58,606 INFO Request ID is 1247f903-05a0-48f0-9794-ad82dda670bf
+2026-05-03 15:43:58  INFO      Request ID is 1247f903-05a0-48f0-9794-ad82dda670bf
+2026-05-03 15:43:58,750 INFO status has been updated to running
+2026-05-03 15:43:58  INFO      status has been updated to running
+2026-05-03 15:56:21,555 INFO status has been updated to successful
+2026-05-03 15:56:21  INFO      status has been updated to successful
+2026-05-03 15:56:21  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/e430383f08a77d757dd02b3d9ecf2068.grib
+e430383f08a77d757dd02b3d9ecf2068.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]e430383f08a77d757dd02b3d9ecf2068.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 962kB/s]                                                                                          2026-05-03 15:56:23  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 15:56:50  INFO        Extracted 63 feature rows
+2026-05-03 15:56:50  INFO      Saved 2016 rows \u2192 weather_ensemble.parquet
+2026-05-03 15:56:50  INFO      [ecds] 2022-02-01 00z — submitting ...
+2026-05-03 15:56:51,116 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 15:56:51  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 15:56:51,118 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 15:56:51  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 15:56:51,460 INFO Request ID is 56483240-ba8e-4cb9-8e75-0797808bd1d0
+2026-05-03 15:56:51  INFO      Request ID is 56483240-ba8e-4cb9-8e75-0797808bd1d0
+2026-05-03 15:56:51,629 INFO status has been updated to accepted
+2026-05-03 15:56:51  INFO      status has been updated to accepted
+2026-05-03 15:56:52,731 INFO status has been updated to running
+2026-05-03 15:56:52  INFO      status has been updated to running
+2026-05-03 16:11:15,484 INFO status has been updated to successful
+2026-05-03 16:11:15  INFO      status has been updated to successful
+2026-05-03 16:11:15  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/4b519db6371e074083bbfdf0bd325376.grib
+4b519db6371e074083bbfdf0bd325376.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]4b519db6371e074083bbfdf0bd325376.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.22MB/s]                                                                                           2026-05-03 16:11:17  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 16:11:44  INFO        Extracted 63 feature rows
+2026-05-03 16:11:44  INFO      Saved 2079 rows \u2192 weather_ensemble.parquet
+2026-05-03 16:11:44  INFO      [ecds] 2022-02-02 00z — submitting ...
+2026-05-03 16:11:44,927 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 16:11:44  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 16:11:44,928 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 16:11:44  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 16:11:45,221 INFO Request ID is 632acc68-3473-4f4f-86e5-92a567e85e6b
+2026-05-03 16:11:45  INFO      Request ID is 632acc68-3473-4f4f-86e5-92a567e85e6b
+2026-05-03 16:11:45,273 INFO status has been updated to accepted
+2026-05-03 16:11:45  INFO      status has been updated to accepted
+2026-05-03 16:11:46,333 INFO status has been updated to running
+2026-05-03 16:11:46  INFO      status has been updated to running
+2026-05-03 16:26:08,738 INFO status has been updated to successful
+2026-05-03 16:26:08  INFO      status has been updated to successful
+2026-05-03 16:26:08  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/ddaf16891de038d16bf38ce4b5350e44.grib
+ddaf16891de038d16bf38ce4b5350e44.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]ddaf16891de038d16bf38ce4b5350e44.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 974kB/s]                                                                                          2026-05-03 16:26:10  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 16:26:37  INFO        Extracted 63 feature rows
+2026-05-03 16:26:37  INFO      Saved 2142 rows \u2192 weather_ensemble.parquet
+2026-05-03 16:26:37  INFO      [ecds] 2022-02-03 00z — submitting ...
+2026-05-03 16:26:37,875 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 16:26:37  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 16:26:37,876 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 16:26:37  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 16:26:38,721 INFO Request ID is 8143511a-b26e-4dbf-a96f-66b6db0e17e7
+2026-05-03 16:26:38  INFO      Request ID is 8143511a-b26e-4dbf-a96f-66b6db0e17e7
+2026-05-03 16:26:38,834 INFO status has been updated to accepted
+2026-05-03 16:26:38  INFO      status has been updated to accepted
+2026-05-03 16:26:39,896 INFO status has been updated to running
+2026-05-03 16:26:39  INFO      status has been updated to running
+2026-05-03 16:41:02,782 INFO status has been updated to successful
+2026-05-03 16:41:02  INFO      status has been updated to successful
+2026-05-03 16:41:03  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/eb7ad54185cdfe6050833664e46b7e4d.grib
+eb7ad54185cdfe6050833664e46b7e4d.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]eb7ad54185cdfe6050833664e46b7e4d.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.15MB/s]                                                                                           2026-05-03 16:41:04  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 16:41:32  INFO        Extracted 63 feature rows
+2026-05-03 16:41:32  INFO      Saved 2205 rows \u2192 weather_ensemble.parquet
+2026-05-03 16:41:32  INFO      [ecds] 2022-02-04 00z — submitting ...
+2026-05-03 16:41:32,944 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 16:41:32  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 16:41:32,946 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 16:41:32  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 16:41:33,376 INFO Request ID is 4b37a388-4299-4e71-9689-2b0ed4455e64
+2026-05-03 16:41:33  INFO      Request ID is 4b37a388-4299-4e71-9689-2b0ed4455e64
+2026-05-03 16:41:33,487 INFO status has been updated to accepted
+2026-05-03 16:41:33  INFO      status has been updated to accepted
+2026-05-03 16:41:34,641 INFO status has been updated to running
+2026-05-03 16:41:34  INFO      status has been updated to running
+2026-05-03 16:55:58,087 INFO status has been updated to successful
+2026-05-03 16:55:58  INFO      status has been updated to successful
+2026-05-03 16:55:58  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/693b7a7c363ce804efb2d5b5b6a004ed.grib
+693b7a7c363ce804efb2d5b5b6a004ed.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]693b7a7c363ce804efb2d5b5b6a004ed.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.08MB/s]                                                                                           2026-05-03 16:55:59  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 16:56:27  INFO        Extracted 63 feature rows
+2026-05-03 16:56:27  INFO      Saved 2268 rows \u2192 weather_ensemble.parquet
+2026-05-03 16:56:27  INFO      [ecds] 2022-02-05 00z — submitting ...
+2026-05-03 16:56:28,437 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 16:56:28  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 16:56:28,438 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 16:56:28  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 16:56:28,668 INFO Request ID is 58682267-083a-4418-a7da-4e2ccd217b74
+2026-05-03 16:56:28  INFO      Request ID is 58682267-083a-4418-a7da-4e2ccd217b74
+2026-05-03 16:56:28,731 INFO status has been updated to accepted
+2026-05-03 16:56:28  INFO      status has been updated to accepted
+2026-05-03 16:56:29,870 INFO status has been updated to running
+2026-05-03 16:56:29  INFO      status has been updated to running
+2026-05-03 17:08:54,023 INFO status has been updated to successful
+2026-05-03 17:08:54  INFO      status has been updated to successful
+2026-05-03 17:08:54  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/2951808b16e244db30c3067be0f814d6.grib
+2951808b16e244db30c3067be0f814d6.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]2951808b16e244db30c3067be0f814d6.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.11MB/s]                                                                                           2026-05-03 17:08:56  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 17:09:23  INFO        Extracted 63 feature rows
+2026-05-03 17:09:23  INFO      Saved 2331 rows \u2192 weather_ensemble.parquet
+2026-05-03 17:09:23  INFO      [ecds] 2022-02-06 00z — submitting ...
+2026-05-03 17:09:24,530 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 17:09:24  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 17:09:24,531 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 17:09:24  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 17:09:24,928 INFO Request ID is 7a33d85f-9dcf-4bd0-9128-70c5c1de132f
+2026-05-03 17:09:24  INFO      Request ID is 7a33d85f-9dcf-4bd0-9128-70c5c1de132f
+2026-05-03 17:09:25,068 INFO status has been updated to accepted
+2026-05-03 17:09:25  INFO      status has been updated to accepted
+2026-05-03 17:09:26,114 INFO status has been updated to running
+2026-05-03 17:09:26  INFO      status has been updated to running
+2026-05-03 17:23:49,008 INFO status has been updated to successful
+2026-05-03 17:23:49  INFO      status has been updated to successful
+2026-05-03 17:23:49  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/3e91913efb4f7b566f34f8eb8f06c2f9.grib
+3e91913efb4f7b566f34f8eb8f06c2f9.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]3e91913efb4f7b566f34f8eb8f06c2f9.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.13MB/s]                                                                                           2026-05-03 17:23:50  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 17:24:17  INFO        Extracted 63 feature rows
+2026-05-03 17:24:17  INFO      Saved 2394 rows \u2192 weather_ensemble.parquet
+2026-05-03 17:24:17  INFO      [ecds] 2022-02-07 00z — submitting ...
+2026-05-03 17:24:18,054 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 17:24:18  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 17:24:18,055 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 17:24:18  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 17:24:18,519 INFO Request ID is b38657e4-ec77-450b-a491-34dcaa1ff08e
+2026-05-03 17:24:18  INFO      Request ID is b38657e4-ec77-450b-a491-34dcaa1ff08e
+2026-05-03 17:24:18,617 INFO status has been updated to accepted
+2026-05-03 17:24:18  INFO      status has been updated to accepted
+2026-05-03 17:24:19,658 INFO status has been updated to running
+2026-05-03 17:24:19  INFO      status has been updated to running
+2026-05-03 17:38:42,009 INFO status has been updated to successful
+2026-05-03 17:38:42  INFO      status has been updated to successful
+2026-05-03 17:38:42  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/76ad84abfb7e524e8582aedaa3aa4c51.grib
+76ad84abfb7e524e8582aedaa3aa4c51.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]76ad84abfb7e524e8582aedaa3aa4c51.grib:  83%|########2 | 1.00M/1.21M [00:00<00:00, 1.17MB/s]                                                                                           2026-05-03 17:38:43  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 17:39:10  INFO        Extracted 63 feature rows
+2026-05-03 17:39:10  INFO      Saved 2457 rows \u2192 weather_ensemble.parquet
+2026-05-03 17:39:10  INFO      [ecds] 2022-02-08 00z — submitting ...
+2026-05-03 17:39:11,424 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 17:39:11  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 17:39:11,426 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 17:39:11  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 17:39:11,795 INFO Request ID is 8e237e1c-713c-4619-92ae-c1efb5423497
+2026-05-03 17:39:11  INFO      Request ID is 8e237e1c-713c-4619-92ae-c1efb5423497
+2026-05-03 17:39:11,896 INFO status has been updated to accepted
+2026-05-03 17:39:11  INFO      status has been updated to accepted
+2026-05-03 17:39:12,937 INFO status has been updated to running
+2026-05-03 17:39:12  INFO      status has been updated to running
+2026-05-03 17:53:37,259 INFO status has been updated to successful
+2026-05-03 17:53:37  INFO      status has been updated to successful
+2026-05-03 17:53:37  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/280c200f6ec334ed8f115b3d95f0bf73.grib
+280c200f6ec334ed8f115b3d95f0bf73.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]280c200f6ec334ed8f115b3d95f0bf73.grib:  83%|########2 | 1.00M/1.21M [00:03<00:00, 308kB/s]280c200f6ec334ed8f115b3d95f0bf73.grib: 100%|##########| 1.21M/1.21M [00:03<00:00, 356kB/s]                                                                                          2026-05-03 17:53:42  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 17:54:09  INFO        Extracted 63 feature rows
+2026-05-03 17:54:09  INFO      Saved 2520 rows \u2192 weather_ensemble.parquet
+2026-05-03 17:54:09  INFO      [ecds] 2022-02-09 00z — submitting ...
+2026-05-03 17:54:10,492 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 17:54:10  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 17:54:10,494 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 17:54:10  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 17:54:11,152 INFO Request ID is 0643cc30-88a0-4aae-8053-21a44c5394d2
+2026-05-03 17:54:11  INFO      Request ID is 0643cc30-88a0-4aae-8053-21a44c5394d2
+2026-05-03 17:54:11,344 INFO status has been updated to accepted
+2026-05-03 17:54:11  INFO      status has been updated to accepted
+2026-05-03 17:54:12,805 INFO status has been updated to running
+2026-05-03 17:54:12  INFO      status has been updated to running
+2026-05-03 18:06:34,938 INFO status has been updated to successful
+2026-05-03 18:06:34  INFO      status has been updated to successful
+2026-05-03 18:06:35  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/af94a2a09db73311294a6f2c219acf82.grib
+af94a2a09db73311294a6f2c219acf82.grib:   0%|          | 0.00/1.19M [00:00<?, ?B/s]af94a2a09db73311294a6f2c219acf82.grib:  84%|########3 | 1.00M/1.19M [00:00<00:00, 1.10MB/s]                                                                                           2026-05-03 18:06:36  INFO        Downloaded 1.2 MB  extracting ...
+2026-05-03 18:07:04  INFO        Extracted 63 feature rows
+2026-05-03 18:07:04  INFO      Saved 2583 rows \u2192 weather_ensemble.parquet
+2026-05-03 18:07:04  INFO      [ecds] 2022-02-10 00z — submitting ...
+2026-05-03 18:07:05,295 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 18:07:05  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 18:07:05,296 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 18:07:05  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 18:07:05,609 INFO Request ID is bc1c1617-006f-489e-bd4c-e9000361c2b9
+2026-05-03 18:07:05  INFO      Request ID is bc1c1617-006f-489e-bd4c-e9000361c2b9
+2026-05-03 18:07:05,656 INFO status has been updated to accepted
+2026-05-03 18:07:05  INFO      status has been updated to accepted
+2026-05-03 18:07:06,716 INFO status has been updated to running
+2026-05-03 18:07:06  INFO      status has been updated to running
+2026-05-03 18:19:28,748 INFO status has been updated to successful
+2026-05-03 18:19:28  INFO      status has been updated to successful
+2026-05-03 18:19:28  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/f12759b3a6b255ed88b57585e2f967c4.grib
+f12759b3a6b255ed88b57585e2f967c4.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]f12759b3a6b255ed88b57585e2f967c4.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 921kB/s]                                                                                          2026-05-03 18:19:30  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 18:19:58  INFO        Extracted 63 feature rows
+2026-05-03 18:19:58  INFO      Saved 2646 rows \u2192 weather_ensemble.parquet
+2026-05-03 18:19:58  INFO      [ecds] 2022-02-11 00z — submitting ...
+2026-05-03 18:19:58,902 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 18:19:58  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 18:19:58,904 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 18:19:58  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 18:19:59,151 INFO Request ID is e5f93d4b-5642-4411-b71b-ed7796b203da
+2026-05-03 18:19:59  INFO      Request ID is e5f93d4b-5642-4411-b71b-ed7796b203da
+2026-05-03 18:19:59,289 INFO status has been updated to accepted
+2026-05-03 18:19:59  INFO      status has been updated to accepted
+2026-05-03 18:20:00,353 INFO status has been updated to running
+2026-05-03 18:20:00  INFO      status has been updated to running
+2026-05-03 18:36:22,647 INFO status has been updated to successful
+2026-05-03 18:36:22  INFO      status has been updated to successful
+2026-05-03 18:36:22  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/2d73c7c1e4070e90714bd522ba5e8efa.grib
+2d73c7c1e4070e90714bd522ba5e8efa.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]2d73c7c1e4070e90714bd522ba5e8efa.grib:  83%|########2 | 1.00M/1.21M [00:01<00:00, 989kB/s]2d73c7c1e4070e90714bd522ba5e8efa.grib: 100%|##########| 1.21M/1.21M [00:01<00:00, 1.13MB/s]                                                                                           2026-05-03 18:36:24  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-03 18:36:38  INFO        Extracted 63 feature rows
+2026-05-03 18:36:38  INFO      Saved 2709 rows \u2192 weather_ensemble.parquet
+2026-05-03 18:36:38  INFO      [ecds] 2022-02-12 00z — submitting ...
+2026-05-03 18:36:39,307 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 18:36:39  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-03 18:36:39,308 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-03 18:36:39  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!

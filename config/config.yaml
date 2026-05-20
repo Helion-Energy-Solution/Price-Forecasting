@@ -1,0 +1,80 @@
+domain:
+  area:
+  - 48
+  - 5
+  - 45
+  - 11
+ecmwf:
+  dataset: tigge
+  origin: ecmf
+  type: pf
+  grid: 0.5/0.5
+  param_ids:
+  - 167
+  - 228
+  - 164
+  members: 50
+  steps:
+  - 0
+  - 6
+  - 12
+  - 18
+  - 24
+  - 30
+  - 36
+  - 42
+  - 48
+  - 54
+  - 60
+  - 66
+  - 72
+  - 96
+  - 120
+  - 144
+  - 168
+  - 216
+  - 264
+  - 312
+  - 360
+  run_times:
+  - 00:00
+  - '12:00'
+training:
+  end_date: '2026-05-17'
+  val_start: '2026-05-01'
+  quantiles:
+  - 0.1
+  - 0.25
+  - 0.5
+  - 0.75
+  - 0.9
+models:
+  trl_weekly:
+    train_start: '2023-01-02'
+    es_val_start: '2025-04-07'
+    val_start: '2026-04-06'
+    horizon_weeks: 1
+    weather_steps_min: 144
+    weather_steps_max: 360
+    spot_feature: false
+  trl_daily:
+    train_start: '2023-01-01'
+    horizon_blocks: 12
+    block_hours: 4
+    weather_steps_max: 120
+    spot_feature: true
+  tre:
+    train_start: '2023-01-01'
+    horizon_steps: 260
+    step_minutes: 15
+    weather_steps_max: 96
+    spot_feature: true
+    extreme_threshold_pos: 300.0
+    extreme_threshold_neg: -200.0
+paths:
+  raw_ecmwf: data/raw/ecmwf/
+  raw_prices: data/raw/prices/
+  raw_market: data/raw/market/
+  features: data/processed/features/
+  targets: data/processed/targets/
+  models: models/

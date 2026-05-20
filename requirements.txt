@@ -1,0 +1,22 @@
+# Data retrieval
+cdsapi>=0.7.0
+ecmwf-opendata
+cfgrib
+eccodes
+
+# Data handling
+pandas
+numpy
+pyarrow
+xarray
+scipy
+
+# Modelling
+lightgbm
+scikit-learn
+mapie
+
+# Utilities
+pyyaml
+tqdm
+python-dotenv

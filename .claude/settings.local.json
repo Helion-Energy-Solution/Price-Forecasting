@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(& \"C:\\\\Users\\\\ThijsAntoniedeBoer\\\\OneDrive - HELION\\\\Dokumente\\\\python-projects\\\\standard_env\\\\Scripts\\\\python.exe\" \"C:\\\\Users\\\\ThijsAntoniedeBoer\\\\OneDrive - HELION\\\\Dokumente\\\\Price Forecasting\\\\src\\\\models\\\\trl_daily_model.py\" 2>&1)",
+      "PowerShell(& \"C:\\\\Users\\\\ThijsAntoniedeBoer\\\\OneDrive - HELION\\\\Dokumente\\\\python-projects\\\\standard_env\\\\Scripts\\\\python.exe\" \"C:\\\\Users\\\\ThijsAntoniedeBoer\\\\OneDrive - HELION\\\\Dokumente\\\\Price Forecasting\\\\src\\\\models\\\\tre_model.py\" 2>&1)"
+    ]
+  }
+}
