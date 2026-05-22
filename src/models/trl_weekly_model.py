@@ -18,8 +18,10 @@ Usage
 python src/models/trl_weekly_model.py
 """
 
+import json
 import logging
 import pickle
+from datetime import datetime
 from pathlib import Path
 
 import lightgbm as lgb
@@ -53,10 +55,21 @@ FEATURE_COLS = [
     "precip_rate_mmh_mean", "precip_rate_mmh_std", "precip_rate_mmh_skew", "precip_rate_mmh_p10", "precip_rate_mmh_p90",
     "temp_2m_mean", "temp_2m_std", "temp_2m_skew", "temp_2m_p10", "temp_2m_p90",
     "wallis_fill_pct", "graubuenden_fill_pct", "tessin_fill_pct", "totalch_fill_pct",
+    "spot_baseload_mean", "spot_peakload_mean", "spot_max", "spot_min",
+    "spot_daily_spread_mean", "spot_neg_hours",
     "marginal_chf_lag1", "marginal_chf_lag4", "marginal_chf_lag52",
     "marginal_chf_roll4_mean", "marginal_chf_roll4_std",
     "marginal_chf_roll12_mean", "marginal_chf_roll12_std",
 ]
+
+# S1 (anticipated auction) results — only meaningful for direction=down.
+# Known at regular-auction bid time; 0-filled for non-S1 weeks (s1_is_active gates interpretation).
+_S1_FEATURE_COLS = ["s1_is_active", "s1_awarded_mw", "s1_marginal_chf", "s1_vwap_chf"]
+
+FEATURE_COLS_BY_DIRECTION = {
+    "up":   FEATURE_COLS,
+    "down": FEATURE_COLS + _S1_FEATURE_COLS,
+}
 
 _BASE_PARAMS = dict(
     learning_rate=0.05,
@@ -114,6 +127,7 @@ def train():
     results = []
 
     for direction in ("up", "down"):
+        fc = FEATURE_COLS_BY_DIRECTION[direction]
         sub = df[df["direction"] == direction].copy()
         sub = sub[sub["week_start"] >= train_start].dropna(subset=["marginal_chf"])
 
@@ -121,11 +135,11 @@ def train():
         es_val_mask  = (sub["week_start"] >= es_val_start) & (sub["week_start"] < kpi_val_start)
         kpi_val_mask = sub["week_start"] >= kpi_val_start
 
-        X_train = sub.loc[train_mask,   FEATURE_COLS]
+        X_train = sub.loc[train_mask,   fc]
         y_train = sub.loc[train_mask,   "marginal_chf"]
-        X_es    = sub.loc[es_val_mask,  FEATURE_COLS]
+        X_es    = sub.loc[es_val_mask,  fc]
         y_es    = sub.loc[es_val_mask,  "marginal_chf"]
-        X_kpi   = sub.loc[kpi_val_mask, FEATURE_COLS]
+        X_kpi   = sub.loc[kpi_val_mask, fc]
         y_kpi   = sub.loc[kpi_val_mask, "marginal_chf"]
 
         log.info(
@@ -146,13 +160,17 @@ def train():
 
             pb_es  = pinball(y_es.values,  model.predict(X_es),  q) if len(y_es)  else float("nan")
             pb_kpi = pinball(y_kpi.values, model.predict(X_kpi), q) if len(y_kpi) else float("nan")
+            mean_es  = float(y_es.mean())  if len(y_es)  else float("nan")
+            mean_kpi = float(y_kpi.mean()) if len(y_kpi) else float("nan")
             log.info(
-                "  q=%.2f  n_est=%d  pinball_es=%.4f  pinball_kpi=%.4f",
-                q, n_est, pb_es, pb_kpi,
+                "  q=%.2f  n_est=%d  pinball_es=%.4f (norm=%.4f)  pinball_kpi=%.4f (norm=%.4f)",
+                q, n_est, pb_es, pb_es / mean_es, pb_kpi, pb_kpi / mean_kpi,
             )
             results.append({
                 "direction": direction, "quantile": q,
-                "n_estimators": n_est, "pinball_es": pb_es, "pinball_kpi": pb_kpi,
+                "n_estimators": n_est,
+                "pinball_es": pb_es, "pinball_es_norm": pb_es / mean_es,
+                "pinball_kpi": pb_kpi, "pinball_kpi_norm": pb_kpi / mean_kpi,
             })
             models[q] = model
 
@@ -163,6 +181,17 @@ def train():
 
     summary = pd.DataFrame(results)
     log.info("\n%s", summary.to_string(index=False))
+
+    payload = {
+        "timestamp":      datetime.now().strftime("%Y%m%d_%H%M%S"),
+        "es_val_start":   str(es_val_start.date()),
+        "kpi_val_start":  str(kpi_val_start.date()),
+        "results":        results,
+    }
+    pinball_path = MODELS_DIR / "pinball_latest.json"
+    pinball_path.write_text(json.dumps(payload, indent=2))
+    log.info("  Pinball metrics → %s", pinball_path.name)
+
     return summary
 
 

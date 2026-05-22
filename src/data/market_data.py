@@ -56,17 +56,32 @@ def parse_trl_weekly(data: dict) -> pd.DataFrame:
     rows = []
     for item in data["trlWeekly"]:
         week_start = pd.Timestamp(item["date"])
+        # Anticipated (S1) auction — only exists for weekly down in Feb–May.
+        # Clears before the regular Tuesday auction, so results are known at bid time.
+        ant = item.get("anticipated", {})
         for direction in ("up", "down"):
             d = item[direction]
-            rows.append({
+            row = {
                 "week_start":     week_start,
                 "direction":      direction,
                 "offered_mw":     d["offered"],
                 "awarded_mw":     d["awarded"],
                 "marginal_chf":   d["marginal"],
                 "median_bid_chf": d["medianBid"],
+                "vwap_chf":       d.get("vwap"),
                 "award_rate_pct": d["awardRate"],
-            })
+            }
+            if direction == "down":
+                row["s1_is_active"]      = int(bool(ant))
+                row["s1_awarded_mw"]     = ant.get("awarded")
+                row["s1_marginal_chf"]   = ant.get("marginal")
+                row["s1_vwap_chf"]       = ant.get("vwap")
+            else:
+                row["s1_is_active"]      = 0
+                row["s1_awarded_mw"]     = None
+                row["s1_marginal_chf"]   = None
+                row["s1_vwap_chf"]       = None
+            rows.append(row)
     df = pd.DataFrame(rows)
     df["week_start"] = pd.to_datetime(df["week_start"])
     return df.sort_values(["week_start", "direction"]).reset_index(drop=True)

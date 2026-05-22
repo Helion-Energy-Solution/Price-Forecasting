@@ -3,6 +3,7 @@ cdsapi>=0.7.0
 ecmwf-opendata
 cfgrib
 eccodes
+volue-insight-timeseries
 
 # Data handling
 pandas

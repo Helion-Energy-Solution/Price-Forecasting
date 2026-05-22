@@ -1,0 +1,21 @@
+# Credentials — never commit
+.env
+
+# Data files
+data/raw/
+data/processed/
+models/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db

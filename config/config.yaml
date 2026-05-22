@@ -40,7 +40,7 @@ ecmwf:
   - 00:00
   - '12:00'
 training:
-  end_date: '2026-05-17'
+  end_date: '2026-05-20'
   val_start: '2026-05-01'
   quantiles:
   - 0.1
@@ -71,6 +71,11 @@ models:
     spot_feature: true
     extreme_threshold_pos: 300.0
     extreme_threshold_neg: -200.0
+volue:
+  area: de
+  model: ec00
+  curve_name: "pr de con ec00 \xE2\u201A\xAC/mwh cet h f"
+  config_file: ~/.volue_config.ini
 paths:
   raw_ecmwf: data/raw/ecmwf/
   raw_prices: data/raw/prices/

@@ -241,6 +241,201 @@ def _price_lags(df: pd.DataFrame, time_col: str, price_col: str,
     return pd.DataFrame(out)
 
 
+def _price_lags_same_block(
+    df: pd.DataFrame,
+    time_col: str,
+    price_col: str,
+    roll_windows: list[int] = (7, 28),
+    block_hours: int = 4,
+) -> pd.DataFrame:
+    """Rolling mean/std within the same block-of-day (time-of-day separated).
+
+    window=7  → 7 past occurrences of the same block ≈ 7 days
+    window=28 → 28 past occurrences of the same block ≈ 4 weeks
+
+    Keeps the intraday shape signal separate from the price-level signal,
+    so the model can learn that the 12-16 block premium scales with the regime.
+    """
+    df = df.sort_values(time_col).reset_index(drop=True)
+    block_id = df[time_col].dt.hour // block_hours
+    out = {}
+    for window in roll_windows:
+        shifted = df.groupby(block_id)[price_col].shift(1)
+        out[f"{price_col}_sb_roll{window}_mean"] = (
+            shifted.groupby(block_id)
+            .rolling(window, min_periods=1)
+            .mean()
+            .droplevel(0)
+            .reindex(df.index)
+        )
+        out[f"{price_col}_sb_roll{window}_std"] = (
+            shifted.groupby(block_id)
+            .rolling(window, min_periods=2)
+            .std()
+            .droplevel(0)
+            .reindex(df.index)
+        )
+    return pd.DataFrame(out)
+
+
+def _load_spot_forecast(n_revision_runs: int = 3) -> pd.DataFrame:
+    """Load the Volue spot price forecast cache with revision statistics.
+
+    Prepends realized spot prices (spot_hourly.parquet) as a static fallback for
+    delivery hours not covered by Volue data (subscription starts 2026-01-01).
+    Realized entries are given issue_date = delivery_hour − 30 days so the
+    merge_asof lookup always finds them for any bid_time before delivery.
+
+    Adds spot_fcst_std / spot_fcst_change for Volue-covered rows; NaN elsewhere
+    (LightGBM handles NaN natively via its split logic).
+    """
+    volue_path    = MARKET_DIR / "spot_forecast_volue.parquet"
+    realized_path = PRICES_DIR / "spot_hourly.parquet"
+
+    if volue_path.exists():
+        df = pd.read_parquet(volue_path)
+        df["issue_date"]    = pd.to_datetime(df["issue_date"],    utc=True).astype("datetime64[us, UTC]")
+        df["delivery_hour"] = pd.to_datetime(df["delivery_hour"], utc=True).astype("datetime64[us, UTC]")
+    else:
+        df = pd.DataFrame({
+            "issue_date":    pd.Series(dtype="datetime64[us, UTC]"),
+            "delivery_hour": pd.Series(dtype="datetime64[us, UTC]"),
+            "price_eur_mwh": pd.Series(dtype="float64"),
+        })
+
+    volue_min = df["delivery_hour"].min() if len(df) else None
+
+    if realized_path.exists():
+        realized = pd.read_parquet(realized_path)
+        realized["hour_time"] = pd.to_datetime(realized["hour_time"], utc=True).astype("datetime64[us, UTC]")
+        if volue_min is not None:
+            realized = realized[realized["hour_time"] < volue_min]
+        if len(realized):
+            realized_rows = pd.DataFrame({
+                "issue_date":    _to_utc_us(realized["hour_time"] - pd.Timedelta(days=30)),
+                "delivery_hour": _to_utc_us(realized["hour_time"]),
+                "price_eur_mwh": realized["price_eur_mwh"].values,
+            })
+            df = pd.concat([realized_rows, df], ignore_index=True)
+
+    df = df.sort_values(["delivery_hour", "issue_date"]).reset_index(drop=True)
+    grp = df.groupby("delivery_hour")["price_eur_mwh"]
+    price_mat = pd.concat(
+        [df["price_eur_mwh"]] + [grp.shift(i).rename(f"_p{i}") for i in range(1, n_revision_runs)],
+        axis=1,
+    )
+    df["spot_fcst_std"]    = price_mat.std(axis=1, ddof=1)
+    df["spot_fcst_change"] = df["price_eur_mwh"] - grp.shift(n_revision_runs - 1)
+    return df
+
+
+def _spot_forecast_asof(
+    spot_fcst: pd.DataFrame,
+    bid_times: pd.Series,
+    delivery_hours: pd.Series,
+    return_cols: list[str] | None = None,
+) -> pd.DataFrame:
+    """
+    Point-in-time spot forecast lookup.
+
+    For each (bid_time, delivery_hour) pair, returns return_cols from the latest
+    forecast run issued at or before bid_time.  Returns NaN where no forecast
+    exists before bid_time for that delivery hour.
+
+    Uses vectorised numpy.searchsorted per delivery_hour group rather than
+    merge_asof (which requires the 'on' column to be globally monotonic, which
+    is impossible when the same delivery_hour appears across many issue_dates).
+    """
+    if return_cols is None:
+        return_cols = ["price_eur_mwh"]
+
+    fcst = (
+        spot_fcst[["issue_date", "delivery_hour"] + return_cols]
+        .sort_values(["delivery_hour", "issue_date"])
+        .reset_index(drop=True)
+    )
+
+    # Integer views for fast searchsorted comparisons
+    dh_f = fcst["delivery_hour"].to_numpy(dtype="int64")
+    id_f = fcst["issue_date"].to_numpy(dtype="int64")
+    val_arrs = {col: fcst[col].to_numpy() for col in return_cols}
+
+    # Build delivery_hour → slice lookup (fcst is sorted by delivery_hour)
+    unique_dh, first_idx = np.unique(dh_f, return_index=True)
+    end_idx = np.append(first_idx[1:], len(dh_f))
+
+    dh_to_slice: dict[int, tuple[int, int]] = {
+        dh: (s, e) for dh, s, e in zip(unique_dh, first_idx, end_idx)
+    }
+
+    bt_q = bid_times.to_numpy(dtype="int64")
+    dh_q = delivery_hours.to_numpy(dtype="int64")
+    n = len(bt_q)
+
+    out_vals = {col: np.full(n, np.nan) for col in return_cols}
+
+    # Vectorised per-group searchsorted
+    for dh_val, (s, e) in dh_to_slice.items():
+        mask = dh_q == dh_val
+        if not mask.any():
+            continue
+        grp_ids = id_f[s:e]
+        bt_grp  = bt_q[mask]
+        idx = np.searchsorted(grp_ids, bt_grp, side="right") - 1
+        valid = idx >= 0
+        for col in return_cols:
+            vals = out_vals[col]
+            rows = np.where(mask)[0]
+            vals[rows[valid]] = val_arrs[col][s + idx[valid]]
+
+    result = pd.DataFrame(out_vals, index=bid_times.index)
+    return result
+
+
+def _spot_week_features(
+    spot_fcst: pd.DataFrame,
+    bid_times: pd.Series,
+    week_starts: pd.Series,
+) -> pd.DataFrame:
+    """Weekly spot price forecast aggregates for TRL Weekly.
+
+    Fetches Volue forecasts for all 168 hours of the delivery week as-of bid_time,
+    then aggregates to six features. Peak = 08:00–19:59 Europe/Zurich.
+    Daily spread uses UTC day buckets (offset // 24) — DST error < 1h, negligible.
+    """
+    n, n_hours   = len(bid_times), 168
+    hour_offsets = np.tile(np.arange(n_hours), n)
+    row_idx      = np.repeat(np.arange(n), n_hours)
+
+    bid_times_rep  = _to_utc_us(bid_times.iloc[row_idx].reset_index(drop=True))
+    delivery_hours = _to_utc_us(
+        week_starts.iloc[row_idx].reset_index(drop=True)
+        + pd.to_timedelta(hour_offsets, unit="h")
+    )
+
+    prices = _spot_forecast_asof(
+        spot_fcst, bid_times_rep, delivery_hours, return_cols=["price_eur_mwh"]
+    )["price_eur_mwh"].values.reshape(n, n_hours)
+
+    local_hour = pd.DatetimeIndex(delivery_hours).tz_convert("Europe/Zurich").hour
+    is_peak    = ((local_hour >= 8) & (local_hour < 20)).reshape(n, n_hours)
+    day_bucket = (hour_offsets // 24).reshape(n, n_hours)
+
+    daily_spreads = np.full((n, 7), np.nan)
+    for d in range(7):
+        day_p = np.where(day_bucket == d, prices, np.nan)
+        daily_spreads[:, d] = np.nanmax(day_p, axis=1) - np.nanmin(day_p, axis=1)
+
+    return pd.DataFrame({
+        "spot_baseload_mean":     np.nanmean(prices, axis=1),
+        "spot_peakload_mean":     np.nanmean(np.where(is_peak, prices, np.nan), axis=1),
+        "spot_max":               np.nanmax(prices, axis=1),
+        "spot_min":               np.nanmin(prices, axis=1),
+        "spot_daily_spread_mean": np.nanmean(daily_spreads, axis=1),
+        "spot_neg_hours":         np.nansum(prices < 0, axis=1).astype(float),
+    }, index=bid_times.index)
+
+
 # ---------------------------------------------------------------------------
 # Swiss public holidays
 # ---------------------------------------------------------------------------
@@ -290,6 +485,7 @@ def build_trl_weekly_features() -> pd.DataFrame:
     prices = pd.read_parquet(PRICES_DIR / "trl_weekly.parquet")
     weather = load_weather_wide()
     reservoir = pd.read_parquet(MARKET_DIR / "reservoir_levels.parquet")
+    spot_fcst = _load_spot_forecast()
 
     prices["week_start"] = pd.to_datetime(prices["week_start"], utc=True)
     week_start = prices["week_start"]
@@ -307,6 +503,7 @@ def build_trl_weekly_features() -> pd.DataFrame:
     w = _weather_agg(weather, init_times, valid_start, valid_end, weather_cols)
 
     res = _reservoir_asof(reservoir, bid_times)
+    spot_week = _spot_week_features(spot_fcst, bid_times, week_start)
 
     # Calendar
     years_w = set(week_start.dt.year) | set((week_start + pd.Timedelta(days=6)).dt.year)
@@ -332,12 +529,22 @@ def build_trl_weekly_features() -> pd.DataFrame:
         lag_parts.append(lag_df)
     price_lags = pd.concat(lag_parts).reindex(prices.index)
 
+    s1_num_cols = [c for c in ["s1_awarded_mw", "s1_marginal_chf", "s1_vwap_chf"]
+                   if c in prices.columns]
+    s1_cols = (["s1_is_active"] if "s1_is_active" in prices.columns else []) + s1_num_cols
+    if s1_num_cols:
+        # Fill with 0 when s1_is_active=0 so dropna in run_backtest doesn't eliminate UP rows
+        # or non-S1 DOWN weeks. LightGBM uses s1_is_active as a gate before interpreting these.
+        for col in s1_num_cols:
+            prices[col] = prices[col].where(prices.get("s1_is_active", pd.Series(0, index=prices.index)) == 1, 0.0)
+
     features = pd.concat([
         prices[["week_start", "direction", "marginal_chf",
-                "offered_mw", "awarded_mw", "award_rate_pct"]],
+                "offered_mw", "awarded_mw", "award_rate_pct"] + s1_cols],
         cal,
         w.set_index(prices.index),
         res.set_index(prices.index),
+        spot_week.set_index(prices.index),
         price_lags,
     ], axis=1)
 
@@ -357,7 +564,6 @@ def build_trl_daily_features() -> pd.DataFrame:
     prices = pd.read_parquet(PRICES_DIR / "trl_daily.parquet")
     weather = load_weather_wide()
     reservoir = pd.read_parquet(MARKET_DIR / "reservoir_levels.parquet")
-    spot = pd.read_parquet(PRICES_DIR / "spot_hourly.parquet")
     trl_weekly_raw = pd.read_parquet(PRICES_DIR / "trl_weekly.parquet")
 
     prices["block_start"] = pd.to_datetime(prices["block_start"], utc=True)
@@ -386,18 +592,20 @@ def build_trl_daily_features() -> pd.DataFrame:
 
     res = _reservoir_asof(reservoir, block_start)
 
-    # Spot price: average of day-ahead hours covering the 4h block
-    spot["hour_time"] = pd.to_datetime(spot["hour_time"], utc=True)
-    # Assign each block's hours via floor then merge
-    prices["_hour0"] = block_start.dt.floor("h")
-    prices["_hour1"] = (block_start + pd.Timedelta(hours=1)).dt.floor("h")
-    prices["_hour2"] = (block_start + pd.Timedelta(hours=2)).dt.floor("h")
-    prices["_hour3"] = (block_start + pd.Timedelta(hours=3)).dt.floor("h")
-    spot_map = spot.drop_duplicates("hour_time").set_index("hour_time")["price_eur_mwh"]
-    spot_vals = (prices[["_hour0","_hour1","_hour2","_hour3"]]
-                 .apply(lambda col: col.map(spot_map))
-                 .mean(axis=1).values)
-    prices.drop(columns=["_hour0","_hour1","_hour2","_hour3"], inplace=True)
+    # Spot price: Volue forecast for each of the 4 block hours, averaged.
+    # The delivery-day DA price is never published at TRL Daily bid time
+    # (gate closes 2 business days ahead; DA clears only 1 day before delivery).
+    spot_fcst = _load_spot_forecast()
+    _SPOT_COLS = ["price_eur_mwh", "spot_fcst_std", "spot_fcst_change"]
+    _hour_fcsts = [
+        _spot_forecast_asof(spot_fcst, bid_times,
+                            (block_start + pd.Timedelta(hours=h)).dt.floor("h"),
+                            return_cols=_SPOT_COLS)
+        for h in range(4)
+    ]
+    spot_vals             = pd.concat([d["price_eur_mwh"]    for d in _hour_fcsts], axis=1).mean(axis=1).values
+    spot_fcst_std_vals    = pd.concat([d["spot_fcst_std"]    for d in _hour_fcsts], axis=1).mean(axis=1).values
+    spot_fcst_change_vals = pd.concat([d["spot_fcst_change"] for d in _hour_fcsts], axis=1).mean(axis=1).values
 
     # cos_zenith: mean over the 4h block (at 15-min intervals)
     def block_cos_zenith(bs, be):
@@ -428,36 +636,59 @@ def build_trl_daily_features() -> pd.DataFrame:
         "cos_zenith":     czn,
         "ssrd_proxy":     ssrd_proxy_d,
         "ssrd_proxy_unc": ssrd_proxy_unc_d,
-        "spot_eur_mwh":   spot_vals,
+        "spot_fcst_std":    spot_fcst_std_vals,
+        "spot_fcst_change": spot_fcst_change_vals,
+        "spot_eur_mwh":     spot_vals,
     }, index=prices.index)
 
-    # TRL Weekly price for the delivery week — always known at TRL Daily bid time
+    # TRL Weekly auction results for the delivery week — always known at TRL Daily bid time
     # (TRL Weekly auction closes Tuesday of prior week; TRL Daily bids ≥2 days ahead).
     trl_weekly_raw["week_start"] = _to_utc_us(pd.to_datetime(trl_weekly_raw["week_start"], utc=True))
+    # 0-fill S1 awarded volume for non-S1 weeks so no NaN propagates into TRL Daily features.
+    if "s1_awarded_mw" in trl_weekly_raw.columns:
+        s1_active = trl_weekly_raw.get("s1_is_active", pd.Series(0, index=trl_weekly_raw.index))
+        trl_weekly_raw["s1_awarded_mw"] = trl_weekly_raw["s1_awarded_mw"].where(s1_active == 1, 0.0)
+
+    pivot_vals = ["marginal_chf", "vwap_chf", "awarded_mw"]
+    if "s1_awarded_mw" in trl_weekly_raw.columns:
+        pivot_vals.append("s1_awarded_mw")
     trl_weekly_wide = (
         trl_weekly_raw.pivot_table(index="week_start", columns="direction",
-                                   values="marginal_chf", aggfunc="first")
-        .rename(columns={"up": "trl_weekly_up_chf", "down": "trl_weekly_down_chf"})
-        .reset_index()
+                                   values=pivot_vals, aggfunc="first")
     )
+    # Flatten MultiIndex columns: (value, direction) → trl_weekly_{direction}_{short_name}
+    _name_map = {"marginal_chf": "chf", "vwap_chf": "vwap_chf",
+                 "awarded_mw": "awarded_mw", "s1_awarded_mw": "s1_awarded_mw"}
+    trl_weekly_wide.columns = [
+        f"trl_weekly_{dir_}_{_name_map[val]}"
+        for val, dir_ in trl_weekly_wide.columns
+    ]
+    trl_weekly_wide = trl_weekly_wide.reset_index()
+
     block_week_start = _to_utc_us(
         (block_start - pd.to_timedelta(block_start.dt.dayofweek, unit="D")).dt.normalize()
     )
+    _weekly_cols = [c for c in trl_weekly_wide.columns if c != "week_start"]
     weekly_vals = (
         pd.DataFrame({"week_start": block_week_start})
         .merge(trl_weekly_wide, on="week_start", how="left")
-        [["trl_weekly_up_chf", "trl_weekly_down_chf"]]
+        [_weekly_cols]
     )
 
     # Price lags
-    lag_parts = []
+    lag_parts    = []
+    sb_lag_parts = []
     for direction in ("up", "down"):
         mask = prices["direction"] == direction
         sub = prices[mask].copy()
         lag_df = _price_lags(sub, "block_start", "marginal_chf", lags=[6, 42], roll_windows=[42, 180])
         lag_df.index = sub.index
         lag_parts.append(lag_df)
-    price_lags = pd.concat(lag_parts).reindex(prices.index)
+        sb_lag_df = _price_lags_same_block(sub, "block_start", "marginal_chf", roll_windows=[7, 28])
+        sb_lag_df.index = sub.index
+        sb_lag_parts.append(sb_lag_df)
+    price_lags    = pd.concat(lag_parts).reindex(prices.index)
+    sb_price_lags = pd.concat(sb_lag_parts).reindex(prices.index)
 
     features = pd.concat([
         prices[["block_start", "direction", "marginal_chf",
@@ -467,6 +698,7 @@ def build_trl_daily_features() -> pd.DataFrame:
         res.set_index(prices.index),
         weekly_vals.set_index(prices.index),
         price_lags,
+        sb_price_lags,
     ], axis=1)
 
     features = features.sort_values(["block_start", "direction"]).reset_index(drop=True)
@@ -509,34 +741,29 @@ def build_tre_features() -> pd.DataFrame:
 
     res = _reservoir_asof(reservoir, slot_time)
 
-    # Spot price: day-ahead price for the delivery hour, but only if that DA auction
-    # result was published before gate closure (bid_time).
-    # DA auction for day D clears ~12:00 local on day D-1; use 13:00 to be safe.
-    # For Sunday delivery and Monday-pre-09:00 (gate = Friday 17:00), Sunday/Monday
-    # DA is not yet published — fall back to same hour of day on bid_time's date.
+    # Spot price: actual DA when published before bid_time; Volue forecast otherwise.
+    # DA auction for day D clears ~12:00 local on D-1; use 13:00 as safe cutoff.
     spot["hour_time"] = pd.to_datetime(spot["hour_time"], utc=True)
     spot_indexed = spot.drop_duplicates("hour_time").set_index("hour_time")["price_eur_mwh"]
 
-    bid_local   = bid_time.dt.tz_convert("Europe/Zurich")
-    slot_local  = slot_time.dt.tz_convert("Europe/Zurich")
-    # DA publish time: 13:00 local on the day before delivery
+    bid_local  = bid_time.dt.tz_convert("Europe/Zurich")
+    slot_local = slot_time.dt.tz_convert("Europe/Zurich")
     da_pub_local = slot_local.dt.normalize() - pd.Timedelta(days=1) + pd.Timedelta(hours=13)
-    da_pub_local = da_pub_local.dt.tz_localize(None).dt.tz_localize("Europe/Zurich", ambiguous="infer",
-                                                                      nonexistent="shift_forward")
+    da_pub_local = da_pub_local.dt.tz_localize(None).dt.tz_localize(
+        "Europe/Zurich", ambiguous="infer", nonexistent="shift_forward"
+    )
     da_known = da_pub_local <= bid_local
 
-    # Where DA is known: use actual slot hour; else: same hour-of-day on bid_time date
-    slot_hour   = slot_time.dt.floor("h")
-    bid_samedayhour = (
-        bid_local.dt.normalize() + pd.to_timedelta(slot_local.dt.hour, unit="h")
-    ).dt.tz_localize(None).dt.tz_localize("Europe/Zurich", ambiguous="infer",
-                                           nonexistent="shift_forward")
-    bid_samedayhour_utc = bid_samedayhour.dt.tz_convert("UTC").dt.floor("h")
-
+    slot_hour = slot_time.dt.floor("h")
+    spot_fcst = _load_spot_forecast()
+    _SPOT_COLS = ["price_eur_mwh", "spot_fcst_std", "spot_fcst_change"]
+    fcst_df = _spot_forecast_asof(spot_fcst, bid_time, slot_hour, return_cols=_SPOT_COLS)
     spot_vals = pd.Series(
-        slot_hour.where(da_known, bid_samedayhour_utc).map(spot_indexed).values,
+        np.where(da_known, slot_hour.map(spot_indexed), fcst_df["price_eur_mwh"].values),
         index=prices.index,
     )
+    spot_fcst_std_vals    = fcst_df["spot_fcst_std"].values
+    spot_fcst_change_vals = fcst_df["spot_fcst_change"].values
 
     # TRL Weekly prices — auction clears on Tuesday prior week, always known at TRE bid time.
     # Align each 15-min slot to its ISO week start (Monday 00:00 UTC) then merge.
@@ -577,6 +804,9 @@ def build_tre_features() -> pd.DataFrame:
         "cos_zenith":           czn,
         "ssrd_proxy":           ssrd_proxy_t,
         "ssrd_proxy_unc":       ssrd_proxy_unc_t,
+        "spot_is_realized":     da_known.astype(int).values,
+        "spot_fcst_std":        spot_fcst_std_vals,
+        "spot_fcst_change":     spot_fcst_change_vals,
         "spot_eur_mwh":         spot_vals.values,
     }, index=prices.index)
 

@@ -157,21 +157,22 @@ def plot_trl_weekly():
     df = pd.read_parquet(FEATURES_DIR / "trl_weekly_features.parquet")
     df["week_start"] = pd.to_datetime(df["week_start"], utc=True)
 
-    from src.models.trl_weekly_model import FEATURE_COLS
+    from src.models.trl_weekly_model import FEATURE_COLS_BY_DIRECTION
     fig, axes = plt.subplots(1, 2, figsize=(16, 7))
     fig.suptitle("TRL Weekly — SHAP feature importance (q=0.50, validation 2026)",
                  fontsize=13, fontweight="bold", y=1.01)
 
     for ax, direction in zip(axes, ("up", "down")):
+        fc = FEATURE_COLS_BY_DIRECTION[direction]
         sub = df[(df["direction"] == direction) & (df["week_start"] >= VAL_START)]
-        sub = sub.dropna(subset=["marginal_chf"] + FEATURE_COLS)
-        X = sub[FEATURE_COLS].values
+        sub = sub.dropna(subset=["marginal_chf"] + fc)
+        X = sub[fc]
 
         model = load_model(MODELS_DIR / "trl_weekly" / f"trl_weekly_{direction}.pkl")
         explainer = shap.TreeExplainer(model)
         sv = explainer.shap_values(X)
 
-        shap_beeswarm(ax, sv, X, FEATURE_COLS,
+        shap_beeswarm(ax, sv, X.values, fc,
                       title=f"Direction: {direction.upper()}")
 
     plt.tight_layout()
@@ -189,21 +190,22 @@ def plot_trl_daily():
     df = pd.read_parquet(FEATURES_DIR / "trl_daily_features.parquet")
     df["block_start"] = pd.to_datetime(df["block_start"], utc=True)
 
-    from src.models.trl_daily_model import FEATURE_COLS
+    from src.models.trl_daily_model import FEATURE_COLS_BY_DIRECTION
     fig, axes = plt.subplots(1, 2, figsize=(16, 8))
     fig.suptitle("TRL Daily — SHAP feature importance (q=0.50, validation 2026)",
                  fontsize=13, fontweight="bold", y=1.01)
 
     for ax, direction in zip(axes, ("up", "down")):
+        fc = FEATURE_COLS_BY_DIRECTION[direction]
         sub = df[(df["direction"] == direction) & (df["block_start"] >= VAL_START)]
-        sub = sub.dropna(subset=["marginal_chf"] + FEATURE_COLS)
-        X = sub[FEATURE_COLS].values
+        sub = sub.dropna(subset=["marginal_chf"] + fc)
+        X = sub[fc]
 
         model = load_model(MODELS_DIR / "trl_daily" / f"trl_daily_{direction}.pkl")
         explainer = shap.TreeExplainer(model)
         sv = explainer.shap_values(X)
 
-        shap_beeswarm(ax, sv, X, FEATURE_COLS,
+        shap_beeswarm(ax, sv, X.values, fc,
                       title=f"Direction: {direction.upper()}")
 
     plt.tight_layout()

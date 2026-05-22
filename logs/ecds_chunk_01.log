@@ -4632,3 +4632,22 @@ The job failed with: MarsRuntimeError
 2026-05-18 15:08:55  INFO        Extracted 63 feature rows
 2026-05-18 15:08:55  INFO      Saved 63 rows → weather_ensemble_chunk_01.parquet
 2026-05-18 15:08:55  INFO      Done.
+2026-05-22 09:23:39  INFO      Source=ecds | 1 date(s) × 1 run(s)
+2026-05-22 09:23:40  INFO      [ecds] 2026-05-20 00z — submitting ...
+2026-05-22 09:23:40,881 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-22 09:23:40  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-22 09:23:40,881 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-22 09:23:40  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-22 09:23:41,346 INFO Request ID is 3049e602-5f0e-4087-be1a-87dbe89e288c
+2026-05-22 09:23:41  INFO      Request ID is 3049e602-5f0e-4087-be1a-87dbe89e288c
+2026-05-22 09:23:41,450 INFO status has been updated to accepted
+2026-05-22 09:23:41  INFO      status has been updated to accepted
+2026-05-22 09:23:42,500 INFO status has been updated to running
+2026-05-22 09:23:42  INFO      status has been updated to running
+2026-05-22 09:24:57,056 INFO status has been updated to successful
+2026-05-22 09:24:57  INFO      status has been updated to successful
+2026-05-22 09:24:57  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/c9951610d12654bc9c0427d949f4c899.grib
+c9951610d12654bc9c0427d949f4c899.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]c9951610d12654bc9c0427d949f4c899.grib:  83%|████████▎ | 1.00M/1.21M [00:00<00:00, 1.32MB/s]                                                                                           2026-05-22 09:24:58  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-22 09:25:37  INFO        Extracted 63 feature rows
+2026-05-22 09:25:37  INFO      Saved 63 rows → weather_ensemble_chunk_01.parquet
+2026-05-22 09:25:37  INFO      Done.

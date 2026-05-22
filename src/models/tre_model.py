@@ -20,8 +20,10 @@ Usage
 python src/models/tre_model.py
 """
 
+import json
 import logging
 import pickle
+from datetime import datetime
 from pathlib import Path
 
 import lightgbm as lgb
@@ -51,7 +53,8 @@ FEATURE_COLS = [
     "quarter_of_hour", "hour_of_day", "day_of_week", "month",
     "is_weekend", "is_friday", "is_holiday",
     "lead_hours", "hours_until_delivery",
-    "cos_zenith", "ssrd_proxy", "ssrd_proxy_unc", "spot_eur_mwh",
+    "cos_zenith", "ssrd_proxy", "ssrd_proxy_unc",
+    "spot_is_realized", "spot_fcst_std", "spot_fcst_change", "spot_eur_mwh",
     "cloud_cover_mean", "cloud_cover_std", "cloud_cover_skew", "cloud_cover_p10", "cloud_cover_p90",
     "temp_2m_mean", "temp_2m_std", "temp_2m_skew", "temp_2m_p10", "temp_2m_p90",
     "wallis_fill_pct", "graubuenden_fill_pct", "tessin_fill_pct", "totalch_fill_pct",
@@ -131,6 +134,7 @@ def train():
         p_ext_val = clf.predict_proba(X_val)[:, 1]
         auc = roc_auc_score(ext_val, p_ext_val)
         log.info("  Classifier  AUC=%.4f  best_iter=%d", auc, clf.best_iteration_)
+        clf_auc = float(auc)
 
         # ------------------------------------------------------------------ #
         # Stage 2 — Regime-specific quantile models                           #
@@ -185,8 +189,9 @@ def train():
             pred = (1 - p_ext) * normal_models[q].predict(X_val) \
                  + p_ext       * extreme_models[q].predict(X_val)
             pb = pinball(y_val.values, pred, q)
-            log.info("  q=%.2f  pinball=%.4f", q, pb)
-            results.append({"direction": direction, "quantile": q, "pinball": pb})
+            pb_norm = pb / abs(float(y_val.mean()))
+            log.info("  q=%.2f  pinball=%.4f (norm=%.4f)", q, pb, pb_norm)
+            results.append({"direction": direction, "quantile": q, "pinball_kpi": pb, "pinball_kpi_norm": pb_norm, "clf_auc": clf_auc})
 
         # ------------------------------------------------------------------ #
         # Save                                                                #
@@ -198,6 +203,16 @@ def train():
 
     summary = pd.DataFrame(results)
     log.info("\n%s", summary.to_string(index=False))
+
+    payload = {
+        "timestamp":     datetime.now().strftime("%Y%m%d_%H%M%S"),
+        "kpi_val_start": str(val_start.date()),
+        "results":       results,
+    }
+    pinball_path = MODELS_DIR / "pinball_latest.json"
+    pinball_path.write_text(json.dumps(payload, indent=2))
+    log.info("  Pinball metrics → %s", pinball_path.name)
+
     return summary
 
 
