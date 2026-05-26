@@ -2,11 +2,12 @@
 # Scheduled via Windows Task Scheduler to run once per day.
 #
 # What it does:
-#   1. Downloads today's ECMWF ENS and runs inference for all three markets
-#   2. Copies the 3 JSON files to Market-Dashboard/data/forecasts/
-#   3. Commits and pushes if anything changed (Vercel redeploys automatically)
+#   1. Downloads fresh price CSVs from Swissgrid and refreshes price parquets
+#   2. Downloads today's ECMWF ENS and runs inference for all three markets
+#   3. Copies the 3 JSON files to Market-Dashboard/data/forecasts/
+#   4. Commits and pushes if anything changed (Vercel redeploys automatically)
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"   # "Stop" treats native stderr as fatal in PS 5.1
 
 $ForecastDir  = "C:\Users\ThijsAntoniedeBoer\OneDrive - HELION\Dokumente\Price Forecasting"
 $DashboardDir = "C:\Users\ThijsAntoniedeBoer\OneDrive - HELION\Dokumente\Market Dashboard"
@@ -24,31 +25,39 @@ New-Item -ItemType Directory -Force -Path "$ForecastDir\logs" | Out-Null
 
 Set-Location $ForecastDir
 
-Log "── Starting daily forecast update ────────────────────────"
+Log "-- Starting daily forecast update ------------------------"
 
-# 1. Run inference
-Log "Step 1: inference.py"
+# 1. Refresh price parquets (downloads fresh CSVs from Swissgrid, then updates parquets)
+Log "Step 1: refresh_prices.py (download + sync parquets)"
+& $Python src/data/refresh_prices.py 2>&1 | Tee-Object -Append $LogFile
+if ($LASTEXITCODE -ne 0) { Log "ERROR: refresh_prices.py failed (exit $LASTEXITCODE)"; exit 1 }
+
+# 2. Run inference
+Log "Step 2: inference.py"
 & $Python src/pipeline/inference.py 2>&1 | Tee-Object -Append $LogFile
 if ($LASTEXITCODE -ne 0) { Log "ERROR: inference.py failed (exit $LASTEXITCODE)"; exit 1 }
 
-# 2. Copy JSON files to Market Dashboard
-Log "Step 2: copying forecasts to Market Dashboard"
+# 3. Copy JSON files to Market Dashboard
+Log "Step 3: copying forecasts to Market Dashboard"
 $TargetDir = "$DashboardDir\data\forecasts"
 New-Item -ItemType Directory -Force -Path $TargetDir | Out-Null
 Copy-Item "$ForecastDir\output\forecasts\*.json" $TargetDir -Force
 
-# 3. Commit and push if anything changed
+# 4. Commit and push if anything changed
 Set-Location $DashboardDir
 git add data/forecasts/
 $changed = & git diff --cached --name-only data/forecasts/
 if ($changed) {
-    Log "Step 3: committing and pushing updated forecasts"
+    Log "Step 4: committing and pushing updated forecasts"
     & git add data/forecasts/
     & git commit -m "Update forecasts $(Get-Date -Format 'yyyy-MM-dd')"
-    & git push
-    Log "Done — Vercel will redeploy automatically."
+    & git pull --rebase 2>&1 | Tee-Object -Append $LogFile
+    if ($LASTEXITCODE -ne 0) { Log "ERROR: git pull --rebase failed (exit $LASTEXITCODE)"; exit 1 }
+    & git push 2>&1 | Tee-Object -Append $LogFile
+    if ($LASTEXITCODE -ne 0) { Log "ERROR: git push failed (exit $LASTEXITCODE)"; exit 1 }
+    Log "Done - Vercel will redeploy automatically."
 } else {
-    Log "Step 3: forecasts unchanged — nothing to push."
+    Log "Step 4: forecasts unchanged - nothing to push."
 }
 
-Log "── Finished ───────────────────────────────────────────────"
+Log "-- Finished -----------------------------------------------"

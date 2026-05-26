@@ -43,33 +43,33 @@ Forecast marginal prices for three Swiss balancing markets to support optimal bi
 Three separate models, one per market, because bidding lead times and relevant input features differ substantially:
 
 ```
-ECMWF ENS (ECDS)          Historical prices         Market data
-  ensemble mean            TRL weekly · daily        Load · RES · ACE
-  ensemble spread              TRE (15-min)               │
-  cos_zenith (det.)               │                       │
-        │                         └──────────┬────────────┘
-        │                                    │
-        ▼                                    ▼
-  Weather features                   Feature store
-  (agg. over CH domain)        lags · calendar · rolling stats
-        │                                    │
-        └─────────────────┬──────────────────┘
-                          │
-          ┌───────────────┼──────────────────┐
-          ▼               ▼                  ▼
-   TRL Weekly         TRL Daily           TRE
-   LightGBM           LightGBM           LightGBM
-   quantile           quantile           quantile
-   (6–12 day          (1–3 day           (1–60 hour
-    horizon)           horizon)           horizon)
-          │               │                  │
-          ▼               ▼                  │
-   Conformal         Conformal     uses TRL Daily forecast
-   wrapper           wrapper       as input feature
-                                          │
-                                          ▼
-                                      Conformal
-                                      wrapper
+ECMWF ENS (Open Data)      Historical prices         Market data
+  ensemble mean             TRL weekly · daily        Spot prices (EPEX)
+  ensemble spread               TRE (15-min)               │
+  cos_zenith (det.)                │                       │
+        │                          └──────────┬────────────┘
+        │                                     │
+        ▼                                     ▼
+  Weather features                    Feature store
+  (agg. over CH domain)         lags · calendar · rolling stats
+        │                                     │
+        └──────────────────┬──────────────────┘
+                           │
+          ┌────────────────┼──────────────────┐
+          ▼                ▼                  ▼
+   TRL Weekly          TRL Daily           TRE
+   LightGBM            LightGBM           LightGBM
+   quantile            quantile           quantile
+   (6–12 day           (1–3 day           (1–60 hour
+    horizon)            horizon)           horizon)
+          │                │                  │
+          ▼                ▼                  │
+   Conformal          Conformal     uses TRL Daily forecast
+   wrapper            wrapper       as input feature
+                                           │
+                                           ▼
+                                       Conformal
+                                       wrapper
 ```
 
 ---
@@ -77,24 +77,26 @@ ECMWF ENS (ECDS)          Historical prices         Market data
 ## Repository structure
 
 ```
-balancing-price-forecast/
+Price Forecasting/
 ├── data/
 │   ├── raw/
-│   │   ├── ecmwf/          # ECDS GRIB2 downloads (temp, deleted after extraction)
-│   │   ├── prices/         # TRL weekly, TRL daily, TRE historical prices
-│   │   └── market/         # Load, RES generation, ACE, volumes
+│   │   ├── ecmwf/          # ECMWF Open Data GRIB2 downloads (temp, deleted after extraction)
+│   │   ├── prices/         # TRL weekly, TRL daily, TRE price parquets
+│   │   └── market/         # Spot prices, load, RES, ACE
 │   └── processed/
 │       ├── features/       # Parquet feature store
 │       └── targets/        # Aligned price targets
+├── logs/                   # Task Scheduler run logs
+├── models/                 # Trained model artefacts
 ├── notebooks/
-│   ├── 01_data_exploration.ipynb
-│   ├── 02_feature_engineering.ipynb
-│   └── 03_model_baseline.ipynb
+├── output/
+│   └── forecasts/          # JSON outputs from inference.py
 ├── src/
 │   ├── data/
-│   │   ├── ecds_download.py     # ECMWF ENS download + Swiss-domain extraction
-│   │   ├── weather_features.py  # Standalone GRIB2 feature extraction
-│   │   └── feature_store.py     # Align weather, market, price on common UTC index
+│   │   ├── ecds_download.py     # ECMWF historical ENS download (training only)
+│   │   ├── weather_features.py  # GRIB2 feature extraction
+│   │   ├── feature_store.py     # Align weather, market, price on common UTC index
+│   │   └── refresh_prices.py    # Daily price refresh from Swissgrid
 │   ├── models/
 │   │   ├── trl_weekly_model.py
 │   │   ├── trl_daily_model.py
@@ -105,8 +107,8 @@ balancing-price-forecast/
 │       └── inference.py
 ├── config/
 │   └── config.yaml
-├── requirements.txt
-└── README.md
+├── push_forecasts.ps1      # Task Scheduler entry point (daily at 06:00)
+└── requirements.txt
 ```
 
 ---
@@ -115,14 +117,14 @@ balancing-price-forecast/
 
 Virtual environment: `C:\Users\ThijsAntoniedeBoer\OneDrive - HELION\Dokumente\python-projects\standard_env\`
 
-eccodes C library required for GRIB2 reading — DLLs placed in `standard_env\Scripts\`. Set `ECCODES_PYTHON_USE_FINDLIBS=1` as a permanent user environment variable (already done). `ecds_download.py` also sets this at import time for self-containment.
+eccodes C library required for GRIB2 reading — DLLs placed in `standard_env\Scripts\`. `ECCODES_PYTHON_USE_FINDLIBS=1` set as a permanent user environment variable. `ecds_download.py` also sets this at import time for self-containment.
 
 **`requirements.txt`**
 
 ```
 # Data retrieval
-cdsapi                  # ECDS/CDS API client
-ecmwf-opendata          # ECMWF open data client (real-time ENS)
+cdsapi                  # ECDS/CDS API client (historical TIGGE downloads)
+ecmwf-opendata          # ECMWF Open Data client (real-time ENS, no auth)
 cfgrib                  # GRIB2 parsing
 eccodes                 # GRIB2 backend (C library must be on PATH)
 
@@ -148,11 +150,13 @@ python-dotenv
 
 ## Data sources
 
-### Weather — ECMWF ENS via ECDS
+### Weather — ECMWF ENS
 
-TIGGE historical ENS archive via **ECMWF Data Store (ECDS)**, `ecds-test.ecmwf.int`. Operational forecasts (inference) from ECMWF Open Data (no auth, last ~100 days).
+**Training:** TIGGE historical ENS archive via ECMWF Data Store (ECDS), `ecds-test.ecmwf.int`. Credentials in `~/.cdsapirc`. Download script: `src/data/ecds_download.py`.
 
-**Variables retrieved from ECMWF ENS:**
+**Inference:** ECMWF Open Data (no auth, last ~100 days). Falls back to latest `weather_ensemble.parquet` if download fails.
+
+**Variables:**
 
 | Variable | ECMWF param ID | Notes |
 |---|---|---|
@@ -160,18 +164,13 @@ TIGGE historical ENS archive via **ECMWF Data Store (ECDS)**, `ecds-test.ecmwf.i
 | Total precipitation | 228 | Hydro inflow signal |
 | Total cloud cover | 164 | Solar attenuation proxy |
 
-Note: Surface solar radiation downward (param 169) is **not available in TIGGE**. It is replaced by a deterministic `cos_zenith` feature computed from day-of-year, time-of-day, and Swiss latitude (46.8°N) — this captures the potential insolation envelope. Cloud cover (ensemble) × cos_zenith (deterministic) together recover the key solar signal.
+Note: Surface solar radiation (param 169) is not in TIGGE. Replaced by deterministic `cos_zenith` computed from day-of-year, time-of-day, and Swiss latitude (46.8°N).
 
-**Spatial aggregation:** Area-weighted mean over the Swiss domain `[48, 5, 45, 11]` (N/W/S/E), collapsed to a single time series per variable. TRL and TRE prices are uniform across Switzerland; fine spatial resolution adds no value.
+**Spatial aggregation:** Area-weighted mean over Swiss domain `[48, 5, 45, 11]` (N/W/S/E).
 
-**Ensemble features extracted per variable per step:**
+**Ensemble features extracted per variable per step:** `mean`, `std`, `skew`, `p10`, `p90`
 
-- `mean` — best estimate
-- `std` — ensemble spread (forecast uncertainty signal)
-- `skew` — directional asymmetry
-- `p10`, `p90` — tail probabilities
-
-**Step resolution and model relevance:**
+**Step resolution:**
 
 | Steps | Resolution | Relevant for |
 |---|---|---|
@@ -179,30 +178,32 @@ Note: Surface solar radiation downward (param 169) is **not available in TIGGE**
 | 72–168h | 24-hourly | TRL Daily (Friday), TRL Weekly |
 | 168–360h | 48-hourly | TRL Weekly |
 
-**ECDS credentials:** `~/.cdsapirc` → `url: https://ecds-test.ecmwf.int/api`. TIGGE licence accepted. Download script: `src/data/ecds_download.py`.
-
 ---
 
 ### Prices — TRL and TRE
 
-Source: Swissgrid transparency platform or internal data store.
+Source: Swissgrid public tenders page (same source as the Market Dashboard website).
 
-**TRL Weekly** — one row per week:
-```
-week_start_utc | marginal_price_chf | accepted_volume_mw
-```
+Prices in the CSV files are EUR-denominated; the `marginal_chf` column name is a legacy label — values are EUR.
 
-**TRL Daily** — one row per 4-hour block:
-```
-datetime_utc (block start) | marginal_price_chf | accepted_volume_mw
-```
+**Daily refresh:** `src/data/refresh_prices.py` downloads the current-period CSVs directly from Swissgrid, parses them, and appends new rows to the parquets. Run automatically by `push_forecasts.ps1` before inference. Training also uses these same parquets — run `refresh_prices.py` manually before retraining to include the latest data.
 
-**TRE** — one row per 15-minute slot:
+**Parquet schemas:**
+
+`data/raw/prices/tre_slots.parquet`
 ```
-datetime_utc | marginal_price_chf | accepted_volume_mw
+slot_time (datetime64[us, UTC]) | direction (pos/neg) | offered | activated | marginal_chf | activation_rate
 ```
 
-Store as Parquet in `data/raw/prices/`.
+`data/raw/prices/trl_daily.parquet`
+```
+block_start (datetime64[us, UTC]) | direction (up/down) | offered_mw | awarded_mw | marginal_chf | median_bid_chf | award_rate_pct
+```
+
+`data/raw/prices/trl_weekly.parquet`
+```
+week_start (datetime64[us]) | direction (up/down) | offered_mw | awarded_mw | marginal_chf | median_bid_chf | vwap_chf | award_rate_pct | s1_is_active | s1_awarded_mw | s1_marginal_chf | s1_vwap_chf
+```
 
 ---
 
@@ -210,19 +211,14 @@ Store as Parquet in `data/raw/prices/`.
 
 | Variable | Granularity | Source |
 |---|---|---|
+| Spot prices | Hourly | EPEX Spot (via Market Dashboard pipeline) |
 | System load | 15-min | Swissgrid transparency |
 | RES generation (solar, wind) | 15-min | Swissgrid transparency |
 | Grid imbalance / ACE | 15-min | Swissgrid transparency |
-| Cross-border flows | Hourly | ENTSO-E transparency |
-
-ENTSO-E data via `entsoe-py`:
-```bash
-pip install entsoe-py
-```
 
 ---
 
-## Feature engineering plan
+## Feature engineering
 
 ### Calendar and deterministic features
 - Hour of day, quarter-hour of day, day of week, month, season
@@ -245,10 +241,11 @@ pip install entsoe-py
 
 ### Weather features (from ECMWF ENS, aggregated over CH)
 - Per variable: mean, std, skew, p10, p90
-- Lead-time-adjusted spread: spread at 24h vs 72h lead and their ratio (uncertainty trajectory)
+- Lead-time-adjusted spread: spread at 24h vs 72h lead and their ratio
 - Assigned to models by relevant horizon bands (see step resolution table above)
 
 ### Market features
+- Spot prices: lagged hourly values, daily min/max/spread
 - Current system load and 24h lag
 - Solar generation, 24h lag
 - ACE (area control error) — recent 1h mean and std (TRE only)
@@ -259,8 +256,7 @@ pip install entsoe-py
 ## Modelling approach
 
 The primary objective is **revenue maximisation**, not price prediction error minimisation.
-Models output quantile distributions; a separate bid-strategy layer (`src/pipeline/bid_strategy.py`)
-converts the quantile forecasts into the revenue-maximising bid for each slot.
+Models output quantile distributions; a bid-strategy layer converts the quantile forecasts into the revenue-maximising bid for each slot.
 
 ### Bid strategy (pay-as-bid)
 
@@ -272,39 +268,40 @@ The KPI reported alongside pinball loss is **capture%** = backtest P&L / oracle 
 
 ### TRL Weekly model
 - **Algorithm:** LightGBM with quantile loss
+- **Train start:** 2023-01-02; early-stop val from 2025-04-07; final val from 2026-04-06
 - **Horizon:** Single-step (one price per week)
-- **Input weather:** 6–12 day ENS ensemble features (24h/48h steps)
+- **Input weather:** Steps 144–360h (6–15 days ahead, 24h/48h resolution)
 - **Target quantiles:** q10, q25, q50, q75, q90
+- **Spot feature:** No
 
 ### TRL Daily model
 - **Algorithm:** LightGBM with quantile loss
-- **Horizon:** Direct multi-output — 6 blocks × 4h = 24h (extends to 18 blocks on Fridays)
-- **Input weather:** 1–3 day ENS ensemble features (6h steps)
+- **Train start:** 2023-01-01
+- **Horizon:** Direct multi-output — 12 blocks × 4h = 48h
+- **Input weather:** Steps 0–120h (6h resolution)
 - **Target quantiles:** q10, q25, q50, q75, q90
+- **Spot feature:** Yes
 
 ### TRE model (two-stage)
-- **Stage 1:** LGBMClassifier — P(extreme price): pos > 300 CHF/MWh, neg < −200 CHF/MWh
+- **Train start:** 2023-01-01
+- **Stage 1:** LGBMClassifier — P(extreme price): pos > 300 EUR/MWh, neg < −200 EUR/MWh
 - **Stage 2a:** Normal-regime quantile model (prices within thresholds)
 - **Stage 2b:** Extreme-regime quantile model (prices beyond thresholds)
 - **Prediction:** blended as (1 − p_ext) × normal[q] + p_ext × extreme[q]
 - **Bidding:** TRE neg uses the extreme-regime model directly; TRE pos uses the blended model
-- **Input weather:** 0–3 day ENS ensemble features (6h steps) + cos_zenith at 15-min resolution
+- **Input weather:** Steps 0–96h (6h resolution) + cos_zenith at 15-min resolution
 - **Additional feature:** TRL Daily quantile forecast for the enclosing 4h block
 - **Target quantiles:** q10, q25, q50, q75, q90
+- **Spot feature:** Yes
 
 ### Conformal prediction wrapper
-Wrap all three models with MAPIE's `TimeSeriesSplit`-compatible conformal wrapper for coverage-guaranteed prediction intervals:
-
-```python
-from mapie.time_series import MapieTimeSeriesRegressor
-from mapie.subsample import BlockBootstrap
-```
+All three models wrapped with MAPIE's `TimeSeriesSplit`-compatible conformal wrapper for coverage-guaranteed prediction intervals.
 
 ---
 
 ## Config file
 
-**`config/config.yaml`**
+`config/config.yaml` — current values:
 
 ```yaml
 domain:
@@ -315,30 +312,39 @@ ecmwf:
   origin: ecmf
   type: pf
   grid: "0.5/0.5"
-  param_ids: [167, 228, 164]   # t2m, tp, tcc (ssrd not in TIGGE)
+  param_ids: [167, 228, 164]   # t2m, tp, tcc
   members: 50
   steps: [0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 96, 120, 144, 168, 216, 264, 312, 360]
   run_times: ["00:00", "12:00"]
 
 training:
-  start_date: "2018-01-01"
-  end_date: "2024-12-31"
-  val_start: "2024-01-01"
+  end_date: "2026-05-20"    # update after each price refresh before retraining
+  val_start: "2026-05-01"
   quantiles: [0.1, 0.25, 0.5, 0.75, 0.9]
 
 models:
   trl_weekly:
+    train_start: "2023-01-02"
+    es_val_start: "2025-04-07"   # early-stopping validation split
+    val_start: "2026-04-06"
     horizon_weeks: 1
-    weather_steps_min: 144    # 6 days ahead
-    weather_steps_max: 360    # 15 days ahead
+    weather_steps_min: 144
+    weather_steps_max: 360
+    spot_feature: false
   trl_daily:
-    horizon_blocks: 18        # 6 normal + 18 for Friday (covers Mon)
+    train_start: "2023-01-01"
+    horizon_blocks: 12
     block_hours: 4
-    weather_steps_max: 72     # 3 days ahead
+    weather_steps_max: 120
+    spot_feature: true
   tre:
-    horizon_steps: 240        # 1h normal; up to 60h Friday
+    train_start: "2023-01-01"
+    horizon_steps: 260
     step_minutes: 15
-    weather_steps_max: 72     # 3 days ahead
+    weather_steps_max: 96
+    spot_feature: true
+    extreme_threshold_pos: 300.0
+    extreme_threshold_neg: -200.0
 
 paths:
   raw_ecmwf: data/raw/ecmwf/
@@ -351,4 +357,27 @@ paths:
 
 ---
 
-## Next steps
+## Daily automation
+
+`push_forecasts.ps1` runs via Windows Task Scheduler at **06:00 local time** (started when available, 2h limit, 1 restart after 30 min).
+
+```
+Step 1  refresh_prices.py   — download TRE + SRL&TRL CSVs from Swissgrid,
+                              append new rows to price parquets
+Step 2  inference.py        — download today's ECMWF Open Data 00z run,
+                              run all three models, write JSON to output/forecasts/
+Step 3  copy JSONs          — copy 3 JSON files to Market Dashboard repo
+Step 4  git commit + push   — if forecasts changed, push to GitHub
+                              → Vercel redeploys Market Dashboard automatically
+```
+
+**Market Dashboard integration:**
+- Local path: `C:\Users\ThijsAntoniedeBoer\OneDrive - HELION\Dokumente\Market Dashboard`
+- GitHub: `https://github.com/Helion-Energy-Solution/Market-Dashboard`
+- Forecast JSONs land in `data/forecasts/` (trl_weekly_latest.json, trl_daily_latest.json, tre_latest.json)
+- The Market Dashboard's own GitHub Actions workflow (`patch_data.py`, runs at 01:00 and 10:00 UTC) independently keeps historical price data fresh on the website
+
+**Retraining workflow:**
+1. Run `python src/data/refresh_prices.py` to pull latest prices into parquets
+2. Update `training.end_date` (and optionally `val_start`) in `config/config.yaml`
+3. Re-run training notebooks / `src/pipeline/train.py`
