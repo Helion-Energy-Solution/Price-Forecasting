@@ -60,7 +60,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Forecasts unchanged — nothing to push"
           else
-            git pull --rebase
             git commit -m "Update forecasts $(date -u +%Y-%m-%d)"
             git push
           fi
