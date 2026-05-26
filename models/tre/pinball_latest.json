@@ -1,0 +1,76 @@
+{
+  "timestamp": "20260522_154131",
+  "kpi_val_start": "2026-05-01",
+  "results": [
+    {
+      "direction": "pos",
+      "quantile": 0.1,
+      "pinball_kpi": 10.45254947790477,
+      "pinball_kpi_norm": 0.12410782758305555,
+      "clf_auc": 0.7116801512497567
+    },
+    {
+      "direction": "pos",
+      "quantile": 0.25,
+      "pinball_kpi": 24.52567800218212,
+      "pinball_kpi_norm": 0.2912044208244683,
+      "clf_auc": 0.7116801512497567
+    },
+    {
+      "direction": "pos",
+      "quantile": 0.5,
+      "pinball_kpi": 39.70796340702644,
+      "pinball_kpi_norm": 0.4714705332522718,
+      "clf_auc": 0.7116801512497567
+    },
+    {
+      "direction": "pos",
+      "quantile": 0.75,
+      "pinball_kpi": 40.72792713852752,
+      "pinball_kpi_norm": 0.4835810220088847,
+      "clf_auc": 0.7116801512497567
+    },
+    {
+      "direction": "pos",
+      "quantile": 0.9,
+      "pinball_kpi": 30.2375935992068,
+      "pinball_kpi_norm": 0.3590245672474062,
+      "clf_auc": 0.7116801512497567
+    },
+    {
+      "direction": "neg",
+      "quantile": 0.1,
+      "pinball_kpi": 35.90403180517057,
+      "pinball_kpi_norm": 3.049411706685359,
+      "clf_auc": 0.7638261107774651
+    },
+    {
+      "direction": "neg",
+      "quantile": 0.25,
+      "pinball_kpi": 52.060988297901794,
+      "pinball_kpi_norm": 4.421659050401374,
+      "clf_auc": 0.7638261107774651
+    },
+    {
+      "direction": "neg",
+      "quantile": 0.5,
+      "pinball_kpi": 50.1960227444106,
+      "pinball_kpi_norm": 4.263263251783515,
+      "clf_auc": 0.7638261107774651
+    },
+    {
+      "direction": "neg",
+      "quantile": 0.75,
+      "pinball_kpi": 39.8755357808396,
+      "pinball_kpi_norm": 3.386720641299452,
+      "clf_auc": 0.7638261107774651
+    },
+    {
+      "direction": "neg",
+      "quantile": 0.9,
+      "pinball_kpi": 21.85028056114209,
+      "pinball_kpi_norm": 1.8557944049033155,
+      "clf_auc": 0.7638261107774651
+    }
+  ]
+}

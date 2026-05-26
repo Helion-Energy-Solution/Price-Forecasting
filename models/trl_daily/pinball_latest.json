@@ -1,0 +1,66 @@
+{
+  "timestamp": "20260522_154121",
+  "kpi_val_start": "2026-05-01",
+  "results": [
+    {
+      "direction": "up",
+      "quantile": 0.1,
+      "pinball_kpi": 0.8205646392977823,
+      "pinball_kpi_norm": 0.07239233969990923
+    },
+    {
+      "direction": "up",
+      "quantile": 0.25,
+      "pinball_kpi": 1.8925819090838591,
+      "pinball_kpi_norm": 0.16696848232401248
+    },
+    {
+      "direction": "up",
+      "quantile": 0.5,
+      "pinball_kpi": 3.1615839018831795,
+      "pinball_kpi_norm": 0.2789231278729685
+    },
+    {
+      "direction": "up",
+      "quantile": 0.75,
+      "pinball_kpi": 4.121765646952353,
+      "pinball_kpi_norm": 0.3636328505855922
+    },
+    {
+      "direction": "up",
+      "quantile": 0.9,
+      "pinball_kpi": 3.930315108812516,
+      "pinball_kpi_norm": 0.34674258779702005
+    },
+    {
+      "direction": "down",
+      "quantile": 0.1,
+      "pinball_kpi": 5.924850072753223,
+      "pinball_kpi_norm": 0.06974091950721732
+    },
+    {
+      "direction": "down",
+      "quantile": 0.25,
+      "pinball_kpi": 10.815251739067795,
+      "pinball_kpi_norm": 0.12730543249579968
+    },
+    {
+      "direction": "down",
+      "quantile": 0.5,
+      "pinball_kpi": 14.493032377719466,
+      "pinball_kpi_norm": 0.17059628379766548
+    },
+    {
+      "direction": "down",
+      "quantile": 0.75,
+      "pinball_kpi": 15.156979434363818,
+      "pinball_kpi_norm": 0.178411549612986
+    },
+    {
+      "direction": "down",
+      "quantile": 0.9,
+      "pinball_kpi": 12.700100333928747,
+      "pinball_kpi_norm": 0.14949182920176818
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "timestamp": "20260522_093505",
+  "results": [
+    {
+      "market": "TRL Weekly  up",
+      "slots": 8,
+      "opt_select_%": 87.5,
+      "med_select_%": 62.5,
+      "opt_pnl/slot": 413.15,
+      "med_pnl/slot": 327.92,
+      "oracle_pnl/slot": 549.22,
+      "capture_%": 75.2
+    },
+    {
+      "market": "TRL Weekly  down",
+      "slots": 8,
+      "opt_select_%": 25.0,
+      "med_select_%": 12.5,
+      "opt_pnl/slot": 285.89,
+      "med_pnl/slot": 161.15,
+      "oracle_pnl/slot": 1120.16,
+      "capture_%": 25.5
+    },
+    {
+      "market": "TRL Daily   up",
+      "slots": 131,
+      "opt_select_%": 45.0,
+      "med_select_%": 25.2,
+      "opt_pnl/slot": 4.38,
+      "med_pnl/slot": 3.58,
+      "oracle_pnl/slot": 12.24,
+      "capture_%": 35.8
+    },
+    {
+      "market": "TRL Daily   down",
+      "slots": 126,
+      "opt_select_%": 38.1,
+      "med_select_%": 28.6,
+      "opt_pnl/slot": 39.48,
+      "med_pnl/slot": 27.6,
+      "oracle_pnl/slot": 77.22,
+      "capture_%": 51.1
+    },
+    {
+      "market": "TRE         pos",
+      "slots": 1960,
+      "opt_select_%": 37.0,
+      "med_select_%": 42.7,
+      "opt_pnl/slot": 39.2,
+      "med_pnl/slot": 30.33,
+      "oracle_pnl/slot": 83.34,
+      "capture_%": 47.0
+    },
+    {
+      "market": "TRE         neg",
+      "slots": 1960,
+      "opt_select_%": 0.2,
+      "med_select_%": 0.2,
+      "opt_pnl/slot": 0.22,
+      "med_pnl/slot": 0.19,
+      "oracle_pnl/slot": 0.69,
+      "capture_%": 32.2
+    }
+  ]
+}
