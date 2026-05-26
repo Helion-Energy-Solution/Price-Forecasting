@@ -1,10 +1,9 @@
 # Credentials — never commit
 .env
 
-# Data files
-data/raw/
-data/processed/
-models/
+# Data files — large untracked outputs only
+data/raw/ecmwf/
+output/
 
 # Python
 __pycache__/
