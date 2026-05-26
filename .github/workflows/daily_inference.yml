@@ -1,0 +1,66 @@
+name: Daily forecast inference
+
+on:
+  schedule:
+    - cron: '0 7 * * *'   # 07:00 UTC — ECMWF 00z run fully published by then
+  workflow_dispatch:        # allow manual trigger from GitHub UI
+
+jobs:
+  infer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # needed to commit updated price parquets back to this repo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install eccodes C library
+        run: sudo apt-get install -y libeccodes-dev
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Refresh price parquets
+        env:
+          ECCODES_PYTHON_USE_FINDLIBS: '1'
+        run: python src/data/refresh_prices.py
+
+      - name: Run inference
+        env:
+          ECCODES_PYTHON_USE_FINDLIBS: '1'
+        run: python src/pipeline/inference.py
+
+      - name: Commit updated price parquets
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add data/raw/prices/
+          if git diff --cached --quiet; then
+            echo "Price parquets unchanged — nothing to commit"
+          else
+            git commit -m "chore: refresh price parquets $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: Push forecasts to Market Dashboard
+        env:
+          MARKET_DASHBOARD_PAT: ${{ secrets.MARKET_DASHBOARD_PAT }}
+        run: |
+          git clone "https://x-access-token:${MARKET_DASHBOARD_PAT}@github.com/Helion-Energy-Solution/Market-Dashboard.git" /tmp/market-dashboard
+          cp output/forecasts/*.json /tmp/market-dashboard/data/forecasts/
+          cd /tmp/market-dashboard
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add data/forecasts/
+          if git diff --cached --quiet; then
+            echo "Forecasts unchanged — nothing to push"
+          else
+            git pull --rebase
+            git commit -m "Update forecasts $(date -u +%Y-%m-%d)"
+            git push
+          fi
