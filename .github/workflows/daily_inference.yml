@@ -54,6 +54,7 @@ jobs:
             echo "Price parquets unchanged — nothing to commit"
           else
             git commit -m "chore: refresh data $(date -u +%Y-%m-%d)"
+            git pull --rebase
             git push
           fi
 

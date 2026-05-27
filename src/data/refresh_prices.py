@@ -103,6 +103,19 @@ def download_current_csvs(dest_dir: Path, parquet_last_date: datetime.date) -> N
         except Exception as e:
             print(f"failed: {e}")
 
+    # TRE intraday: "Aktuell" file updated ~every 15 min, contains today's cleared slots
+    fn_aktuell = f"{today.year}-TRE-Ergebnis-Aktuell.csv"
+    if fn_aktuell in links:
+        print(f"  Downloading {fn_aktuell}...", end=" ", flush=True)
+        try:
+            raw = _extract_if_zip(_http_get(links[fn_aktuell]))
+            (dest_dir / "TRE" / fn_aktuell).write_bytes(raw)
+            print(f"{len(raw)//1024} KB")
+        except Exception as e:
+            print(f"failed: {e}")
+    else:
+        print(f"  {fn_aktuell} not found on page — intraday data unavailable")
+
 
 # ── Shared helpers ─────────────────────────────────────────────────────────────
 
@@ -132,7 +145,7 @@ def refresh_tre(tre_dir: Path) -> int:
 
     slot_map: dict = {}   # (date_str, slot_from, direction) -> aggregates
 
-    for path in sorted(tre_dir.rglob("*-TRE-Ergebnis.csv")):
+    for path in sorted(tre_dir.rglob("*-TRE-Ergebnis*.csv")):
         with open(path, encoding="latin-1", newline="") as f:
             reader = csv.reader(f, delimiter=";")
             next(reader, None)
