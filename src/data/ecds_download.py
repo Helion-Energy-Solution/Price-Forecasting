@@ -301,7 +301,8 @@ def process_opendata_run(cfg: dict, run_date: date, run_hour: int) -> pd.DataFra
 
     init_time = pd.Timestamp(f"{run_date} {run_hour:02d}:00", tz="UTC")
     steps = cfg["ecmwf"]["steps"]
-    client = Client(source="ecmwf")
+    source = os.environ.get("ECMWF_OPENDATA_SOURCE", "ecmwf")
+    client = Client(source=source)
     all_rows = []
 
     log.info("[opendata] %s %02dz — %d steps", run_date, run_hour, len(steps))

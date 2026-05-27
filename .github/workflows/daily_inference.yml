@@ -42,6 +42,7 @@ jobs:
       - name: Run inference
         env:
           ECCODES_PYTHON_USE_FINDLIBS: '1'
+          ECMWF_OPENDATA_SOURCE: 'azure'
         run: python src/pipeline/inference.py
 
       - name: Commit updated price parquets
