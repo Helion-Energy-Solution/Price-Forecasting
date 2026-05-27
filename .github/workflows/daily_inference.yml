@@ -2,7 +2,7 @@ name: Daily forecast inference
 
 on:
   schedule:
-    - cron: '0 7 * * *'   # 07:00 UTC — ECMWF 00z run fully published by then
+    - cron: '0 10 * * *'   # 10:00 UTC — ECMWF 00z run (all steps 0–360h) fully published by then
   workflow_dispatch:        # allow manual trigger from GitHub UI
 
 jobs:
@@ -48,11 +48,11 @@ jobs:
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git add -f data/raw/prices/ data/raw/market/
+          git add -f data/raw/prices/ data/raw/market/ data/processed/features/weather_ensemble.parquet
           if git diff --cached --quiet; then
             echo "Price parquets unchanged — nothing to commit"
           else
-            git commit -m "chore: refresh price parquets $(date -u +%Y-%m-%d)"
+            git commit -m "chore: refresh data $(date -u +%Y-%m-%d)"
             git push
           fi
 
