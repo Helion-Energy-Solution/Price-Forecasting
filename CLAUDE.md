@@ -272,7 +272,7 @@ The KPI reported alongside pinball loss is **capture%** = backtest P&L / oracle 
 - **Horizon:** Single-step (one price per week)
 - **Input weather:** Steps 144–360h (6–15 days ahead, 24h/48h resolution)
 - **Target quantiles:** q10, q25, q50, q75, q90
-- **Spot feature:** No
+- **Spot feature:** Yes — weekly aggregates (baseload mean, peakload mean, max, min, daily spread mean, neg hours) from Volue forecast
 
 ### TRL Daily model
 - **Algorithm:** LightGBM with quantile loss
@@ -330,7 +330,7 @@ models:
     horizon_weeks: 1
     weather_steps_min: 144
     weather_steps_max: 360
-    spot_feature: false
+    spot_feature: true
   trl_daily:
     train_start: "2023-01-01"
     horizon_blocks: 12
