@@ -595,10 +595,11 @@ def infer_tre(weather: pd.DataFrame, now: pd.Timestamp, cfg: dict) -> list[dict]
         with open(MODELS_DIR / "tre" / f"tre_{direction}.pkl", "rb") as f:
             bundles[direction] = pickle.load(f)
 
-    preds = {
-        "pos": _predict_pos(bundles["pos"], X_dir["pos"], quantiles),           # (n, n_q)
-        "neg": _predict_neg_extreme(bundles["neg"], X_dir["neg"], quantiles),   # (n, n_q)
-    }
+    # neg display: blended unconditional distribution (realistic price expectations)
+    # neg bid:     extreme-regime only (correct for pay-as-bid curtailment strategy)
+    preds_pos     = _predict_pos(bundles["pos"], X_dir["pos"], quantiles)
+    preds_neg_disp = _predict_pos(bundles["neg"], X_dir["neg"], quantiles)
+    preds_neg_bid  = _predict_neg_extreme(bundles["neg"], X_dir["neg"], quantiles)
 
     output_slots = []
     for i in range(n):
@@ -607,15 +608,16 @@ def infer_tre(weather: pd.DataFrame, now: pd.Timestamp, cfg: dict) -> list[dict]
             "slot_time":    row["slot_time"].strftime("%Y-%m-%dT%H:%M:%SZ"),
             "bid_deadline": row["bid_time"].strftime("%Y-%m-%dT%H:%M:%SZ"),
         }
-        q_pos = preds["pos"][i]
-        q_neg = preds["neg"][i]
+        q_pos          = preds_pos[i]
+        q_neg_display  = preds_neg_disp[i]
+        q_neg_bid      = preds_neg_bid[i]
         slot_out["pos"] = {
             "quantiles":  {f"q{int(q*100):02d}": round(float(p), 2) for q, p in zip(quantiles, q_pos)},
             "optimal_bid": round(_opt_bid_pos(q_pos, quantiles, opp_cost=0.0), 2),
         }
         slot_out["neg"] = {
-            "quantiles":  {f"q{int(q*100):02d}": round(float(p), 2) for q, p in zip(quantiles, q_neg)},
-            "optimal_bid": round(_opt_bid_neg(q_neg, quantiles, opp_cost=200.0), 2),
+            "quantiles":  {f"q{int(q*100):02d}": round(float(p), 2) for q, p in zip(quantiles, q_neg_display)},
+            "optimal_bid": round(_opt_bid_neg(q_neg_bid, quantiles, opp_cost=200.0), 2),
         }
         output_slots.append(slot_out)
 
