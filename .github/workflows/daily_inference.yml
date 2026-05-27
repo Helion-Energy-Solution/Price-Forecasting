@@ -30,25 +30,14 @@ jobs:
           ECCODES_PYTHON_USE_FINDLIBS: '1'
         run: python src/data/refresh_prices.py
 
+      - name: Refresh market data (spot realized + reservoir levels)
+        run: python src/data/market_data.py
+
       - name: Refresh Volue spot forecast
         env:
           VOLUE_CLIENT_ID: ${{ secrets.VOLUE_CLIENT_ID }}
           VOLUE_CLIENT_SECRET: ${{ secrets.VOLUE_CLIENT_SECRET }}
-        run: |
-          cat > ~/.volue_config.ini << EOF
-          [volue_insight]
-          client_id = ${VOLUE_CLIENT_ID}
-          client_secret = ${VOLUE_CLIENT_SECRET}
-          EOF
-          python - << 'EOF'
-          import pandas as pd
-          from src.data.spot_forecast import fetch_spot_forecast_history
-          today = pd.Timestamp.now(tz="UTC").date()
-          fetch_spot_forecast_history(
-              start_date=pd.Timestamp(today) - pd.Timedelta(days=2),
-              end_date=pd.Timestamp(today),
-          )
-          EOF
+        run: python src/data/update_spot_forecast.py
 
       - name: Run inference
         env:
@@ -59,7 +48,7 @@ jobs:
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git add -f data/raw/prices/
+          git add -f data/raw/prices/ data/raw/market/
           if git diff --cached --quiet; then
             echo "Price parquets unchanged — nothing to commit"
           else
