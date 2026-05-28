@@ -39,14 +39,18 @@ def _load_bundle(pkl_path: Path) -> dict:
         return pickle.load(f)
 
 
-def _predict_pos(bundle: dict, X: np.ndarray, quantiles: list) -> np.ndarray:
+def _predict_pos(bundle: dict, X: np.ndarray, quantiles: list,
+                 clip_normal_lower: float = None) -> np.ndarray:
     """Blended two-stage (TRE) or direct quantile predictions (TRL). Shape (n, len(quantiles))."""
     if "normal" in bundle:
         p = bundle["clf"].predict_proba(X)[:, 1]
-        return np.column_stack(
-            [(1 - p) * bundle["normal"][q].predict(X) + p * bundle["extreme"][q].predict(X)
-             for q in quantiles]
-        )
+        cols = []
+        for q in quantiles:
+            normal_pred = bundle["normal"][q].predict(X)
+            if clip_normal_lower is not None:
+                normal_pred = np.maximum(normal_pred, clip_normal_lower)
+            cols.append((1 - p) * normal_pred + p * bundle["extreme"][q].predict(X))
+        return np.column_stack(cols)
     return np.column_stack([bundle[q].predict(X) for q in quantiles])
 
 

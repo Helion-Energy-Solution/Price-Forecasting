@@ -612,7 +612,9 @@ def infer_tre(weather: pd.DataFrame, now: pd.Timestamp, cfg: dict) -> list[dict]
     # neg bid:     extreme-regime only (correct for pay-as-bid curtailment strategy)
     # p_extreme:   classifier P(extreme curtailment event) — contextualises the bid
     preds_pos      = _predict_pos(bundles["pos"], X_dir["pos"], quantiles)
-    preds_neg_disp = _predict_pos(bundles["neg"], X_dir["neg"], quantiles)
+    extreme_threshold_neg = cfg["models"]["tre"]["extreme_threshold_neg"]  # -200
+    preds_neg_disp = _predict_pos(bundles["neg"], X_dir["neg"], quantiles,
+                                  clip_normal_lower=extreme_threshold_neg)
     preds_neg_bid  = _predict_neg_extreme(bundles["neg"], X_dir["neg"], quantiles)
     p_extreme_neg  = bundles["neg"]["clf"].predict_proba(X_dir["neg"])[:, 1]
 
