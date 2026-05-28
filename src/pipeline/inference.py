@@ -100,32 +100,43 @@ def _weather_wide_from_df(rows_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def download_inference_weather(run_date: date, run_hour: int = 0) -> pd.DataFrame:
-    """Download today's ENS from ECMWF Open Data and return a wide-format DataFrame.
+    """Download the most recent available ENS from ECMWF Open Data.
 
-    Falls back to the most recent init_time in weather_ensemble.parquet if the
-    download fails (network unavailable).
+    Tries run_date 00z first, then steps back through recent 12z/00z runs
+    (up to 3 days) before falling back to weather_ensemble.parquet.
     """
     cfg = _load_cfg()
-    log.info("Downloading ECMWF Open Data ENS %s %02dz ...", run_date, run_hour)
-    try:
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            rows_df = process_opendata_run(cfg, run_date, run_hour)
-        if rows_df.empty:
-            raise RuntimeError("Open Data returned no rows")
-        wide = _weather_wide_from_df(rows_df)
-        log.info("  %d steps, %d wide rows", rows_df["lead_hours"].nunique(), len(wide))
-        return wide
-    except Exception as exc:
-        log.warning("Open Data download failed (%s) — trying weather_ensemble.parquet fallback", exc)
-        parquet = ROOT / "data" / "processed" / "features" / "weather_ensemble.parquet"
-        if not parquet.exists():
-            raise RuntimeError("No weather_ensemble.parquet fallback available.") from exc
-        from src.data.feature_store import load_weather_wide
-        full = load_weather_wide()
-        latest = full["init_time"].max()
-        log.info("  Fallback: using init_time=%s", latest)
-        return full[full["init_time"] == latest].reset_index(drop=True)
+
+    # Most-recent-first: today 00z, yesterday 12z, yesterday 00z, ...
+    candidates = [(run_date, 0)]
+    for days_back in range(1, 4):
+        d = run_date - timedelta(days=days_back)
+        candidates += [(d, 12), (d, 0)]
+
+    for d, h in candidates:
+        log.info("Downloading ECMWF Open Data ENS %s %02dz ...", d, h)
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                rows_df = process_opendata_run(cfg, d, h)
+            if rows_df.empty:
+                log.warning("  No rows returned — trying next candidate")
+                continue
+            wide = _weather_wide_from_df(rows_df)
+            log.info("  %d steps, %d wide rows", rows_df["lead_hours"].nunique(), len(wide))
+            return wide
+        except Exception as exc:
+            log.warning("  Failed (%s) — trying next candidate", exc)
+
+    log.warning("All ECMWF candidates failed — using weather_ensemble.parquet fallback")
+    parquet = ROOT / "data" / "processed" / "features" / "weather_ensemble.parquet"
+    if not parquet.exists():
+        raise RuntimeError("No weather_ensemble.parquet fallback available.")
+    from src.data.feature_store import load_weather_wide
+    full = load_weather_wide()
+    latest = full["init_time"].max()
+    log.info("  Fallback: using init_time=%s", latest)
+    return full[full["init_time"] == latest].reset_index(drop=True)
 
 
 # ---------------------------------------------------------------------------
