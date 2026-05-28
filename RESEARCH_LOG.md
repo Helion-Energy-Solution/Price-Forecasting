@@ -311,7 +311,7 @@ TRL Weekly training uses three segments: train / es_val (~52 weeks, fixed 2025-0
 | 2 | Apply same CV n_estimators approach to TRL Daily and TRE for consistency? | Open |
 | 3 | Add ACE / system load features to TRE pos (was 34% capture)? | Partially addressed — spot price raised TRE pos to ~46–47% in EXP-006/007; further gains from load/ACE still possible |
 | 4 | Extend val window for TRL Weekly down to reduce noise in capture% estimates? | Open |
-| 5 | Build inference pipeline (`src/pipeline/inference.py`) for live bidding? | Open |
+| 5 | Build inference pipeline (`src/pipeline/inference.py`) for live bidding? | ✅ Done — inference.py operational, running daily via GitHub Actions (`.github/workflows/daily_inference.yml`); outputs pushed to Market Dashboard repo |
 | 6 | Conformal prediction wrapper (MAPIE) for coverage-guaranteed intervals? | Planned |
 | 7 | Run `update_spot_forecast.py` daily to grow the Volue revision signal (spot_fcst_std / spot_fcst_change currently ~90% NaN in training) | Open — schedule or add to data update notebook cell |
 | 8 | TRL Daily up regression in EXP-008 (−7.1 pp): is it caused by same-block rolling NaN fill behaviour, VWAP/volume noise for UP, or statistical variance? Consider ablation: retrain with only same-block rolling (no VWAP/volume) vs only VWAP/volume to isolate the cause. | Open |

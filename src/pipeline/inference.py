@@ -244,6 +244,7 @@ def _daily_lags(direction: str, future_blocks: pd.Series) -> pd.DataFrame:
     prices = pd.read_parquet(PRICES_DIR / "trl_daily.parquet")
     prices["block_start"] = _to_utc_us(pd.to_datetime(prices["block_start"], utc=True))
     sub = prices[prices["direction"] == direction][["block_start", "marginal_chf"]].copy()
+    sub = sub.dropna(subset=["marginal_chf"])  # exclude uncleared blocks so future_idx is unambiguous
     future_df = pd.DataFrame({"block_start": future_blocks, "marginal_chf": np.nan})
     combined  = pd.concat([sub, future_df], ignore_index=True).sort_values("block_start").reset_index(drop=True)
     lags    = _price_lags(combined, "block_start", "marginal_chf", lags=[6, 42], roll_windows=[42, 180])
@@ -608,9 +609,11 @@ def infer_tre(weather: pd.DataFrame, now: pd.Timestamp, cfg: dict) -> list[dict]
 
     # neg display: blended unconditional distribution (realistic price expectations)
     # neg bid:     extreme-regime only (correct for pay-as-bid curtailment strategy)
-    preds_pos     = _predict_pos(bundles["pos"], X_dir["pos"], quantiles)
+    # p_extreme:   classifier P(extreme curtailment event) — contextualises the bid
+    preds_pos      = _predict_pos(bundles["pos"], X_dir["pos"], quantiles)
     preds_neg_disp = _predict_pos(bundles["neg"], X_dir["neg"], quantiles)
     preds_neg_bid  = _predict_neg_extreme(bundles["neg"], X_dir["neg"], quantiles)
+    p_extreme_neg  = bundles["neg"]["clf"].predict_proba(X_dir["neg"])[:, 1]
 
     output_slots = []
     for i in range(n):
@@ -627,7 +630,8 @@ def infer_tre(weather: pd.DataFrame, now: pd.Timestamp, cfg: dict) -> list[dict]
             "optimal_bid": round(_opt_bid_pos(q_pos, quantiles, opp_cost=0.0), 2),
         }
         slot_out["neg"] = {
-            "quantiles":  {f"q{int(q*100):02d}": round(float(p), 2) for q, p in zip(quantiles, q_neg_display)},
+            "quantiles":   {f"q{int(q*100):02d}": round(float(p), 2) for q, p in zip(quantiles, q_neg_display)},
+            "p_extreme":   round(float(p_extreme_neg[i]), 4),
             "optimal_bid": round(_opt_bid_neg(q_neg_bid, quantiles, opp_cost=200.0), 2),
         }
         output_slots.append(slot_out)
