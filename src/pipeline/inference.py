@@ -258,6 +258,7 @@ def _tre_lags(direction: str, future_slots: pd.Series) -> pd.DataFrame:
     prices = pd.read_parquet(PRICES_DIR / "tre_slots.parquet")
     prices["slot_time"] = _to_utc_us(pd.to_datetime(prices["slot_time"], utc=True))
     sub = prices[prices["direction"] == direction][["slot_time", "marginal_chf"]].copy()
+    sub = sub.dropna(subset=["marginal_chf"])  # exclude uncleared slots so future_idx is unambiguous
     future_df = pd.DataFrame({"slot_time": future_slots, "marginal_chf": np.nan})
     combined  = pd.concat([sub, future_df], ignore_index=True).sort_values("slot_time").reset_index(drop=True)
     lags = _price_lags(combined, "slot_time", "marginal_chf", lags=[], roll_windows=[96, 672])
