@@ -1,5 +1,5 @@
 {
-  "timestamp": "20260529_104314",
+  "timestamp": "20260529_160522",
   "es_val_start": "2025-04-07",
   "kpi_val_start": "2026-04-06",
   "results": [
@@ -7,91 +7,91 @@
       "direction": "up",
       "quantile": 0.1,
       "n_estimators": 30,
-      "pinball_es": 15.578635556923635,
-      "pinball_es_norm": 0.062855397961583,
+      "pinball_es": 15.428852507892719,
+      "pinball_es_norm": 0.06250309610864832,
       "pinball_kpi": 23.23009605282633,
       "pinball_kpi_norm": 0.04430593889875328
     },
     {
       "direction": "up",
       "quantile": 0.25,
-      "n_estimators": 116,
-      "pinball_es": 20.446252035292645,
-      "pinball_es_norm": 0.08249485674180121,
-      "pinball_kpi": 29.39758259192906,
-      "pinball_kpi_norm": 0.056068967391574465
+      "n_estimators": 300,
+      "pinball_es": 19.898081876547216,
+      "pinball_es_norm": 0.08060818024356421,
+      "pinball_kpi": 27.603990439835925,
+      "pinball_kpi_norm": 0.05264811264697029
     },
     {
       "direction": "up",
       "quantile": 0.5,
-      "n_estimators": 127,
-      "pinball_es": 39.22688508815971,
-      "pinball_es_norm": 0.15826941095067631,
-      "pinball_kpi": 32.27374578027967,
-      "pinball_kpi_norm": 0.0615545715060009
+      "n_estimators": 195,
+      "pinball_es": 39.149793496825076,
+      "pinball_es_norm": 0.158597880452485,
+      "pinball_kpi": 32.435830134980456,
+      "pinball_kpi_norm": 0.061863709251255436
     },
     {
       "direction": "up",
       "quantile": 0.75,
-      "n_estimators": 134,
-      "pinball_es": 44.54230792916481,
-      "pinball_es_norm": 0.17971564202686177,
-      "pinball_kpi": 32.971421746311144,
-      "pinball_kpi_norm": 0.06288522414952961
+      "n_estimators": 119,
+      "pinball_es": 46.35487456931078,
+      "pinball_es_norm": 0.18778604428474685,
+      "pinball_kpi": 33.167749565909524,
+      "pinball_kpi_norm": 0.06325967324175337
     },
     {
       "direction": "up",
       "quantile": 0.9,
-      "n_estimators": 109,
-      "pinball_es": 41.34898640128514,
-      "pinball_es_norm": 0.16683149086222646,
-      "pinball_kpi": 34.34097622185173,
-      "pinball_kpi_norm": 0.06549732686205512
+      "n_estimators": 104,
+      "pinball_es": 41.710118563515984,
+      "pinball_es_norm": 0.16896989247547245,
+      "pinball_kpi": 34.44149850318657,
+      "pinball_kpi_norm": 0.06568904944661338
     },
     {
       "direction": "down",
       "quantile": 0.1,
       "n_estimators": 30,
-      "pinball_es": 152.85828370774303,
-      "pinball_es_norm": 0.16416914706134839,
+      "pinball_es": 152.08443437166866,
+      "pinball_es_norm": 0.1644018043838843,
       "pinball_kpi": 73.80416053662059,
       "pinball_kpi_norm": 0.06511940284399334
     },
     {
       "direction": "down",
       "quantile": 0.25,
-      "n_estimators": 68,
-      "pinball_es": 238.41913412546168,
-      "pinball_es_norm": 0.2560611367802475,
-      "pinball_kpi": 107.44730401302529,
-      "pinball_kpi_norm": 0.09480365637454072
+      "n_estimators": 48,
+      "pinball_es": 239.7627163824098,
+      "pinball_es_norm": 0.25918118024439074,
+      "pinball_kpi": 120.66751815874224,
+      "pinball_kpi_norm": 0.1064682081339451
     },
     {
       "direction": "down",
       "quantile": 0.5,
-      "n_estimators": 163,
-      "pinball_es": 314.13537626675196,
-      "pinball_es_norm": 0.3373800590494008,
-      "pinball_kpi": 239.0489279804192,
-      "pinball_kpi_norm": 0.21091932117915874
+      "n_estimators": 241,
+      "pinball_es": 295.9266245482768,
+      "pinball_es_norm": 0.31989382241495185,
+      "pinball_kpi": 203.3999777027762,
+      "pinball_kpi_norm": 0.17946529017038576
     },
     {
       "direction": "down",
       "quantile": 0.75,
-      "n_estimators": 366,
-      "pinball_es": 226.72095044881064,
-      "pinball_es_norm": 0.2434973372282739,
-      "pinball_kpi": 492.485168370872,
-      "pinball_kpi_norm": 0.43453295641675715
+      "n_estimators": 337,
+      "pinball_es": 227.40693196857652,
+      "pinball_es_norm": 0.24582469665285972,
+      "pinball_kpi": 511.49620713208867,
+      "pinball_kpi_norm": 0.45130690903098913
     },
     {
       "direction": "down",
       "quantile": 0.9,
-      "n_estimators": 155,
-      "pinball_es": 135.23150014695398,
-      "pinball_es_norm": 0.145238056430091,
-      "pinball_kpi": 295.17124476985674,
-      "pinball_kpi_norm": 0.26043755604528407
+      "n_estimators": 128,
+      "pinball_es": 133.0103698855137,
+      "pinball_es_norm": 0.14378292493436057,
+      "pinball_kpi": 297.51490432890466,
+      "pinball_kpi_norm": 0.2625054301305003
     }
   ]
 }

@@ -77,13 +77,9 @@ volue:
   curve_name: "pr de con ec00 \xE2\u201A\xAC/mwh cet h f"
   config_file: ~/.volue_config.ini
 entsoe:
-  country: CH                 # resolves to 10YCH-SWISSGRIDZ
+  country: CH
   backfill_start: '2023-01-01'
-  token_env: ENTSOE_API_TOKEN  # read from environment or .env
-  # Day-ahead: 6.1.B load, 14.1.C generation, 14.1.D wind/solar (hourly).
-  # Week-ahead: 6.1.C load daily min/max.
-  # Used by TRE (day-ahead + week-ahead) and TRL Daily (week-ahead only);
-  # TRL Weekly bids before publication, so no ENTSO-E forecast is leakage-safe there.
+  token_env: ENTSOE_API_TOKEN
 paths:
   raw_ecmwf: data/raw/ecmwf/
   raw_prices: data/raw/prices/
