@@ -200,7 +200,7 @@ def refresh_tre(tre_dir: Path) -> int:
 
         offered   = r["offered"]
         activated = r["activated"]
-        marginal  = r["marginal"] if r["marginal"] is not None else 0.0
+        marginal  = r["marginal"] if r["marginal"] is not None else float("nan")
         act_rate  = round(activated / offered, 4) if offered > 0 else 0.0
 
         new_rows.append({

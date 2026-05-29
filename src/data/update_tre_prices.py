@@ -16,7 +16,9 @@ Parquet output schema:
 
 Marginal price logic:
   For each (slot, direction): max(Preis where Abgerufene Menge > 0).
-  If no activation: 0.0 (consistent with existing data).
+  If no activation: NaN — these slots are dropped during model training
+  (dropna on marginal_chf) so the models learn the conditional price given
+  activation, not a zero-inflated distribution.
 
 Usage
 -----
@@ -137,7 +139,7 @@ def parse_tre_csv(raw: bytes) -> pd.DataFrame:
         offered   = int(g["offered_mw"].sum())
         activated = int(g["activated_mw"].sum())
         called    = g[g["activated_mw"] > 0]["price"]
-        marginal  = float(called.max()) if len(called) > 0 else 0.0
+        marginal  = float(called.max()) if len(called) > 0 else float("nan")  # NaN = no activation (dropna'd in training)
         rate      = activated / offered if offered > 0 else 0.0
         return pd.Series({
             "offered":         offered,

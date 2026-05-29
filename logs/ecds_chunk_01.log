@@ -4651,3 +4651,69 @@ The job failed with: MarsRuntimeError
 2026-05-22 09:25:37  INFO        Extracted 63 feature rows
 2026-05-22 09:25:37  INFO      Saved 63 rows → weather_ensemble_chunk_01.parquet
 2026-05-22 09:25:37  INFO      Done.
+2026-05-29 09:59:03  INFO      Source=ecds | 3 date(s) × 1 run(s)
+2026-05-29 09:59:04  INFO      [ecds] 2026-05-25 00z — submitting ...
+2026-05-29 09:59:04,851 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-29 09:59:04  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-29 09:59:04,852 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-29 09:59:04  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-29 09:59:05,193 INFO Request ID is 2dbd58e6-e6a5-4be0-8d5e-23845f218e68
+2026-05-29 09:59:05  INFO      Request ID is 2dbd58e6-e6a5-4be0-8d5e-23845f218e68
+2026-05-29 09:59:05,295 INFO status has been updated to accepted
+2026-05-29 09:59:05  INFO      status has been updated to accepted
+2026-05-29 09:59:06,344 INFO status has been updated to running
+2026-05-29 09:59:06  INFO      status has been updated to running
+2026-05-29 10:00:59,363 INFO status has been updated to successful
+2026-05-29 10:00:59  INFO      status has been updated to successful
+2026-05-29 10:00:59  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/eea5cd9ea5e9330cfa6cdfc9b0256e45.grib
+eea5cd9ea5e9330cfa6cdfc9b0256e45.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]eea5cd9ea5e9330cfa6cdfc9b0256e45.grib:  83%|████████▎ | 1.00M/1.21M [00:00<00:00, 1.09MB/s]                                                                                           2026-05-29 10:01:01  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-29 10:01:35  INFO        Extracted 63 feature rows
+2026-05-29 10:01:35  INFO      Saved 63 rows → weather_ensemble_chunk_01.parquet
+2026-05-29 10:01:35  INFO      [ecds] 2026-05-26 00z — submitting ...
+2026-05-29 10:01:36,760 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-29 10:01:36  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-29 10:01:36,761 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-29 10:01:36  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-29 10:01:37,081 INFO Request ID is 80ed8af3-fd46-4c16-b39c-59fe89b02158
+2026-05-29 10:01:37  INFO      Request ID is 80ed8af3-fd46-4c16-b39c-59fe89b02158
+2026-05-29 10:01:37,140 INFO status has been updated to accepted
+2026-05-29 10:01:37  INFO      status has been updated to accepted
+2026-05-29 10:01:38,208 INFO status has been updated to running
+2026-05-29 10:01:38  INFO      status has been updated to running
+2026-05-29 10:02:52,820 INFO status has been updated to successful
+2026-05-29 10:02:52  INFO      status has been updated to successful
+2026-05-29 10:02:53  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/3f63c2827b6bb3490b4e24a06753414f.grib
+3f63c2827b6bb3490b4e24a06753414f.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]3f63c2827b6bb3490b4e24a06753414f.grib:  83%|████████▎ | 1.00M/1.21M [00:00<00:00, 1.24MB/s]                                                                                           2026-05-29 10:02:54  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-29 10:03:16  INFO        Extracted 63 feature rows
+2026-05-29 10:03:16  INFO      Saved 126 rows → weather_ensemble_chunk_01.parquet
+2026-05-29 10:03:16  INFO      [ecds] 2026-05-27 00z — submitting ...
+2026-05-29 10:03:17,059 CRITICAL [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-29 10:03:17  CRITICAL  [2025-09-30T00:00:00Z] This is an experimental and unsupported instance of the data store, not to be used in a production environment.
+2026-05-29 10:03:17,060 WARNING [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-29 10:03:17  WARNING   [2024-03-01T00:00:00Z] The production stack of the ECDS now uses the production Keycloak. Users might need to recreate their accounts!
+2026-05-29 10:03:17,525 INFO Request ID is 25e0e2b6-3a80-4588-8876-9b88c4ba585f
+2026-05-29 10:03:17  INFO      Request ID is 25e0e2b6-3a80-4588-8876-9b88c4ba585f
+2026-05-29 10:03:17,615 INFO status has been updated to accepted
+2026-05-29 10:03:17  INFO      status has been updated to accepted
+2026-05-29 10:03:18,659 INFO status has been updated to running
+2026-05-29 10:03:18  INFO      status has been updated to running
+2026-05-29 10:07:37,001 INFO status has been updated to successful
+2026-05-29 10:07:37  INFO      status has been updated to successful
+2026-05-29 10:07:37  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/da7dad1452db3f1d6bd641c400c90c42.grib
+da7dad1452db3f1d6bd641c400c90c42.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]da7dad1452db3f1d6bd641c400c90c42.grib:  83%|████████▎ | 1.00M/1.21M [00:00<00:00, 1.62MB/s]                                                                                           2026-05-29 10:07:38  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-29 10:07:55  INFO        Extracted 63 feature rows
+2026-05-29 10:07:55  INFO      Saved 63 rows → weather_ensemble_chunk_01.parquet
+2026-05-29 10:07:55  INFO      Done.
+9 10:04:46,405 INFO Request ID is 1a24c18f-7d79-4e3f-85f2-d6530b08f301
+2026-05-29 10:04:46  INFO      Request ID is 1a24c18f-7d79-4e3f-85f2-d6530b08f301
+2026-05-29 10:04:46,495 INFO status has been updated to accepted
+2026-05-29 10:04:46  INFO      status has been updated to accepted
+2026-05-29 10:04:47,546 INFO status has been updated to running
+2026-05-29 10:04:47  INFO      status has been updated to running
+2026-05-29 10:06:02,074 INFO status has been updated to successful
+2026-05-29 10:06:02  INFO      status has been updated to successful
+2026-05-29 10:06:02  INFO      Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-test-cache-1/2026-05-29/58ccb9d2868cf322d73aea31339b5ee2.grib
+58ccb9d2868cf322d73aea31339b5ee2.grib:   0%|          | 0.00/1.21M [00:00<?, ?B/s]58ccb9d2868cf322d73aea31339b5ee2.grib:  83%|████████▎ | 1.00M/1.21M [00:00<00:00, 1.51MB/s]                                                                                           2026-05-29 10:06:04  INFO        Downloaded 1.3 MB  extracting ...
+2026-05-29 10:06:24  INFO        Extracted 63 feature rows
+2026-05-29 10:06:24  INFO      Saved 63 rows → weather_ensemble_chunk_01.parquet
+2026-05-29 10:06:24  INFO      Done.

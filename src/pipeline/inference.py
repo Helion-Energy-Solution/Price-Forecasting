@@ -240,31 +240,43 @@ def _weekly_lags(direction: str, future_week_start: pd.Timestamp) -> pd.Series:
 
 
 def _daily_lags(direction: str, future_blocks: pd.Series) -> pd.DataFrame:
-    """Compute TRL Daily lag + same-block-rolling features for all future blocks at once."""
+    """Compute TRL Daily lag + same-block-rolling features for all future blocks at once.
+
+    Keeps uncleared (NaN-price) history so shift/rolling windows stay calendar-aligned,
+    exactly as feature_store builds them at training time. Future rows are identified by
+    block_start membership (not isna), since uncleared history is also NaN.
+    """
     prices = pd.read_parquet(PRICES_DIR / "trl_daily.parquet")
     prices["block_start"] = _to_utc_us(pd.to_datetime(prices["block_start"], utc=True))
     sub = prices[prices["direction"] == direction][["block_start", "marginal_chf"]].copy()
-    sub = sub.dropna(subset=["marginal_chf"])  # exclude uncleared blocks so future_idx is unambiguous
-    future_df = pd.DataFrame({"block_start": future_blocks, "marginal_chf": np.nan})
+    future_set = set(future_blocks)
+    sub = sub[~sub["block_start"].isin(future_set)]                       # avoid duplicate boundary rows
+    future_df = pd.DataFrame({"block_start": list(future_set), "marginal_chf": np.nan})
     combined  = pd.concat([sub, future_df], ignore_index=True).sort_values("block_start").reset_index(drop=True)
     lags    = _price_lags(combined, "block_start", "marginal_chf", lags=[6, 42], roll_windows=[42, 180])
     sb_lags = _price_lags_same_block(combined, "block_start", "marginal_chf", roll_windows=[7, 28])
-    future_idx = combined[combined["marginal_chf"].isna()].index
-    return pd.concat([lags.loc[future_idx], sb_lags.loc[future_idx]], axis=1).reset_index(drop=True)
+    is_future = combined["block_start"].isin(future_set).values
+    return pd.concat([lags[is_future], sb_lags[is_future]], axis=1).reset_index(drop=True)
 
 
 def _tre_lags(direction: str, future_slots: pd.Series) -> pd.DataFrame:
-    """Compute TRE lag features for all future slots at once."""
+    """Compute TRE lag features for all future slots at once.
+
+    Keeps unactivated (NaN-price) history so shift/rolling windows stay calendar-aligned,
+    exactly as feature_store builds them at training time. Future rows are identified by
+    slot_time membership (not isna), since unactivated history is also NaN.
+    """
     prices = pd.read_parquet(PRICES_DIR / "tre_slots.parquet")
     prices["slot_time"] = _to_utc_us(pd.to_datetime(prices["slot_time"], utc=True))
     sub = prices[prices["direction"] == direction][["slot_time", "marginal_chf"]].copy()
-    sub = sub.dropna(subset=["marginal_chf"])  # exclude uncleared slots so future_idx is unambiguous
-    future_df = pd.DataFrame({"slot_time": future_slots, "marginal_chf": np.nan})
+    future_set = set(future_slots)
+    sub = sub[~sub["slot_time"].isin(future_set)]                         # avoid duplicate boundary rows
+    future_df = pd.DataFrame({"slot_time": list(future_set), "marginal_chf": np.nan})
     combined  = pd.concat([sub, future_df], ignore_index=True).sort_values("slot_time").reset_index(drop=True)
     lags = _price_lags(combined, "slot_time", "marginal_chf", lags=[], roll_windows=[96, 672])
     lags["marginal_chf_lag96h"] = combined["marginal_chf"].shift(96).rolling(4, min_periods=1).mean()
-    future_idx = combined[combined["marginal_chf"].isna()].index
-    return lags.loc[future_idx].reset_index(drop=True)
+    is_future = combined["slot_time"].isin(future_set).values
+    return lags[is_future].reset_index(drop=True)
 
 
 # ---------------------------------------------------------------------------

@@ -14,8 +14,9 @@ Output files:
   data/raw/market/
     reservoir_levels.parquet — one row per week, fill rate per canton (%)
 
-Note on TRE marginal prices: None (no activation) is treated as 0 CHF/MWh.
-No activation means zero clearing revenue — the correct target for bid price forecasting.
+Note on TRE marginal prices: None (no activation) is stored as NaN. Unactivated
+slots are dropped during model training (dropna on marginal_chf) so the models
+learn the conditional price given activation, not a zero-inflated distribution.
 
 Note on timestamps: Swissgrid publishes in Swiss local time (CET/CEST).
 All times are stored as UTC by converting from Europe/Zurich.
@@ -121,7 +122,7 @@ def parse_tre_slots(data: dict) -> pd.DataFrame:
             "direction":        "pos",
             "offered":          item["po"],
             "activated":        item["pa"],
-            "marginal_chf":     item["pm"] if item["pm"] is not None else 0.0,
+            "marginal_chf":     item["pm"] if item["pm"] is not None else float("nan"),  # NaN = no activation
             "activation_rate":  round(item["pa"] / item["po"], 4) if item["po"] else 0.0,
         })
         rows.append({
@@ -129,7 +130,7 @@ def parse_tre_slots(data: dict) -> pd.DataFrame:
             "direction":        "neg",
             "offered":          item["no"],
             "activated":        item["na"],
-            "marginal_chf":     item["nm"] if item["nm"] is not None else 0.0,
+            "marginal_chf":     item["nm"] if item["nm"] is not None else float("nan"),  # NaN = no activation
             "activation_rate":  round(item["na"] / item["no"], 4) if item["no"] else 0.0,
         })
     df = pd.DataFrame(rows)
