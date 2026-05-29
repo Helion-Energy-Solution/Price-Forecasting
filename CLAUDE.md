@@ -108,7 +108,8 @@ Price Forecasting/
 │       └── inference.py
 ├── config/
 │   └── config.yaml
-├── push_forecasts.ps1      # Task Scheduler entry point (daily at 06:00)
+├── .github/workflows/
+│   └── daily_inference.yml  # CI entry point (daily at 10:00 UTC)
 └── requirements.txt
 ```
 
@@ -188,7 +189,7 @@ Source: Swissgrid public tenders page (same source as the Market Dashboard websi
 
 Prices in the CSV files are EUR-denominated; the `marginal_chf` column name is a legacy label — values are EUR.
 
-**Daily refresh:** `src/data/refresh_prices.py` downloads the current-period CSVs directly from Swissgrid, parses them, and appends new rows to the parquets. Run automatically by `push_forecasts.ps1` before inference. Training also uses these same parquets — run `refresh_prices.py` manually before retraining to include the latest data.
+**Daily refresh:** `src/data/refresh_prices.py` downloads the current-period CSVs directly from Swissgrid, parses them, and appends new rows to the parquets. Run automatically by the daily GitHub Actions workflow before inference. Training also uses these same parquets — run `refresh_prices.py` manually before retraining to include the latest data.
 
 **Parquet schemas:**
 
@@ -213,7 +214,7 @@ week_start (datetime64[us]) | direction (up/down) | offered_mw | awarded_mw | ma
 
 Source: ENTSO-E Transparency Platform (CH = `10YCH-SWISSGRIDZ`), via `entsoe-py`. Archived back to 2015; we backfill from 2023-01-01. Requires a free API token in `.env` as `ENTSOE_API_TOKEN` (request "Restful API access" from `transparency@entsoe.eu`).
 
-**Refresh:** `src/data/entsoe_download.py` — incremental refresh by default (fetches a forward window to today+8d to catch newly published day-ahead/week-ahead forecasts); `--start 2023-01-01` for a full historical backfill. Run automatically by `push_forecasts.ps1` (Step 1b) before inference; run manually before retraining.
+**Refresh:** `src/data/entsoe_download.py` — incremental refresh by default (fetches a forward window to today+8d to catch newly published day-ahead/week-ahead forecasts); `--start 2023-01-01` for a full historical backfill. Run automatically by the daily GitHub Actions workflow (step 4) before inference; run manually before retraining.
 
 **Data items pulled:**
 
@@ -406,22 +407,24 @@ paths:
 
 ## Daily automation
 
-`push_forecasts.ps1` runs via Windows Task Scheduler at **06:00 local time** (started when available, 2h limit, 1 restart after 30 min).
+Runs as a **GitHub Actions workflow** — `.github/workflows/daily_inference.yml`, scheduled at **10:00 UTC** (ECMWF 00z fully published by then) and triggerable manually via `workflow_dispatch`. (The former local `push_forecasts.ps1` / Windows Task Scheduler path has been retired — everything runs in CI now.)
 
 ```
-Step 1  refresh_prices.py   — download TRE + SRL&TRL CSVs from Swissgrid,
-                              append new rows to price parquets
-Step 1b entsoe_download.py  — refresh CH load/generation forecasts from ENTSO-E
-                              (non-fatal: inference falls back to existing parquets)
-Step 2  inference.py        — download today's ECMWF Open Data 00z run,
-                              run all three models, write JSON to output/forecasts/
-Step 3  copy JSONs          — copy 3 JSON files to Market Dashboard repo
-Step 4  git commit + push   — if forecasts changed, push to GitHub
-                              → Vercel redeploys Market Dashboard automatically
+1  refresh_prices.py        — download TRE + SRL&TRL CSVs from Swissgrid, append new rows
+2  market_data.py           — refresh realized spot + reservoir levels
+3  update_spot_forecast.py  — refresh Volue spot forecast        (secrets: VOLUE_CLIENT_ID/SECRET)
+4  entsoe_download.py       — refresh CH load/generation forecasts (secret: ENTSOE_API_TOKEN;
+                              non-fatal — skips cleanly if token/data missing)
+5  inference.py             — download today's ECMWF Open Data 00z, run all three models,
+                              write JSON to output/forecasts/
+6  commit data parquets     — git add -f data/raw/ + weather_ensemble.parquet, commit+push to this repo
+7  push forecasts           — clone Market-Dashboard (secret: MARKET_DASHBOARD_PAT),
+                              copy 3 JSONs to data/forecasts/, commit+push → Vercel redeploys
 ```
+
+**Required GitHub secrets:** `VOLUE_CLIENT_ID`, `VOLUE_CLIENT_SECRET`, `ENTSOE_API_TOKEN`, `MARKET_DASHBOARD_PAT`.
 
 **Market Dashboard integration:**
-- Local path: `C:\Users\ThijsAntoniedeBoer\OneDrive - HELION\Dokumente\Market Dashboard`
 - GitHub: `https://github.com/Helion-Energy-Solution/Market-Dashboard`
 - Forecast JSONs land in `data/forecasts/` (trl_weekly_latest.json, trl_daily_latest.json, tre_latest.json)
 - The Market Dashboard's own GitHub Actions workflow (`patch_data.py`, runs at 01:00 and 10:00 UTC) independently keeps historical price data fresh on the website

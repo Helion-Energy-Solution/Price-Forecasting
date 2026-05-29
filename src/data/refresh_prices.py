@@ -5,7 +5,7 @@ Fetches the current-period CSV files directly from Swissgrid (same source as
 the Market Dashboard GitHub Actions workflow), then appends any new rows to
 the Price Forecasting parquet files so lag features use up-to-date prices.
 
-Run before inference.py (handled automatically by push_forecasts.ps1).
+Run before inference.py (handled automatically by the daily GitHub Actions workflow).
 """
 
 import csv
