@@ -608,15 +608,16 @@ def infer_tre(weather: pd.DataFrame, now: pd.Timestamp, cfg: dict) -> list[dict]
         with open(MODELS_DIR / "tre" / f"tre_{direction}.pkl", "rb") as f:
             bundles[direction] = pickle.load(f)
 
-    # neg display: blended unconditional distribution (realistic price expectations)
-    # neg bid:     extreme-regime only (correct for pay-as-bid curtailment strategy)
-    # p_extreme:   classifier P(extreme curtailment event) — contextualises the bid
-    preds_pos      = _predict_pos(bundles["pos"], X_dir["pos"], quantiles)
-    extreme_threshold_neg = cfg["models"]["tre"]["extreme_threshold_neg"]  # -200
-    preds_neg_disp = _predict_pos(bundles["neg"], X_dir["neg"], quantiles,
-                                  clip_normal_lower=extreme_threshold_neg)
-    preds_neg_bid  = _predict_neg_extreme(bundles["neg"], X_dir["neg"], quantiles)
-    p_extreme_neg  = bundles["neg"]["clf"].predict_proba(X_dir["neg"])[:, 1]
+    # neg display: classifier picks regime; normal model when p_extreme < 0.5,
+    #              extreme model when p_extreme >= 0.5. Conditional quantiles, no blending.
+    # neg bid:     always extreme-regime (correct for pay-as-bid curtailment strategy)
+    # p_extreme:   classifier output — context for interpreting the displayed quantiles
+    preds_pos     = _predict_pos(bundles["pos"], X_dir["pos"], quantiles)
+    p_extreme_neg = bundles["neg"]["clf"].predict_proba(X_dir["neg"])[:, 1]
+    preds_neg_normal = np.column_stack([bundles["neg"]["normal"][q].predict(X_dir["neg"]) for q in quantiles])
+    preds_neg_bid    = _predict_neg_extreme(bundles["neg"], X_dir["neg"], quantiles)
+    is_extreme       = (p_extreme_neg >= 0.5)[:, np.newaxis]
+    preds_neg_disp   = np.where(is_extreme, preds_neg_bid, preds_neg_normal)
 
     output_slots = []
     for i in range(n):
