@@ -39,6 +39,11 @@ jobs:
           VOLUE_CLIENT_SECRET: ${{ secrets.VOLUE_CLIENT_SECRET }}
         run: python src/data/update_spot_forecast.py
 
+      - name: Refresh ENTSO-E CH load/generation forecasts
+        env:
+          ENTSOE_API_TOKEN: ${{ secrets.ENTSOE_API_TOKEN }}
+        run: python src/data/entsoe_download.py   # non-fatal: skips cleanly if token/data missing
+
       - name: Run inference
         env:
           ECCODES_PYTHON_USE_FINDLIBS: '1'

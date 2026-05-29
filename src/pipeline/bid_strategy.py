@@ -105,10 +105,13 @@ def run_backtest(
     """
     df = pd.read_parquet(features_parquet)
     df[time_col] = pd.to_datetime(df[time_col], utc=True)
+    # Drop only on the clearing price — LightGBM predicts through feature NaN, so
+    # dropping on feature_cols would silently exclude biddable slots (far-horizon
+    # ENTSO-E NaN, ~88%-NaN spot revision stats) and bias the backtest to easy rows.
     sub = df[
         (df[time_col] >= pd.Timestamp(val_start, tz="UTC")) &
         (df["direction"] == direction)
-    ].dropna(subset=[clearing_col] + feature_cols).copy()
+    ].dropna(subset=[clearing_col]).copy()
 
     if sub.empty:
         return pd.DataFrame()

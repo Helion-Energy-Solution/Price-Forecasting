@@ -224,6 +224,119 @@ def _reservoir_asof(reservoir: pd.DataFrame, dates: pd.Series) -> pd.DataFrame:
     return result.set_index("row_idx")[res_cols]
 
 
+# ---------------------------------------------------------------------------
+# ENTSO-E load / generation forecasts (point-in-time)
+# ---------------------------------------------------------------------------
+#
+# ENTSO-E returns each archived forecast as a flat series indexed by delivery
+# time with no publish timestamp, so we model the publication deadline from the
+# delivery date and only expose a value once that deadline has passed relative
+# to the bid time — the same leakage guard as _spot_forecast_asof.
+#
+#   Day-ahead   (6.1.B load / 14.1.C gen / 14.1.D solar): published D-1.
+#                Load by ~12:00 local; generation & solar by 18:00 Brussels.
+#   Week-ahead  (6.1.C load, daily min/max): published the Friday before the
+#                delivery ISO week (~10:00 local).
+#
+# Reachability (given bid lead times): TRE bids land close enough for day-ahead
+# to cover the near slots (week-ahead fills the Fri→Mon gap); TRL Daily bids 2
+# business days out so only week-ahead is ever published in time; TRL Weekly
+# bids Tuesday, before even the week-ahead Friday publication, so neither is
+# usable there.
+
+ENTSOE_DA_PARQUET = MARKET_DIR / "entsoe_da.parquet"
+ENTSOE_WK_PARQUET = MARKET_DIR / "entsoe_load_week.parquet"
+
+
+def _load_entsoe_da() -> pd.DataFrame | None:
+    """Hourly day-ahead forecasts indexed by delivery_time (UTC). None if absent."""
+    if not ENTSOE_DA_PARQUET.exists():
+        return None
+    df = pd.read_parquet(ENTSOE_DA_PARQUET)
+    df["delivery_time"] = _to_utc_us(pd.to_datetime(df["delivery_time"], utc=True))
+    return df.set_index("delivery_time").sort_index()
+
+
+def _load_entsoe_week() -> pd.DataFrame | None:
+    """Daily week-ahead load min/max indexed by local delivery_date. None if absent."""
+    if not ENTSOE_WK_PARQUET.exists():
+        return None
+    df = pd.read_parquet(ENTSOE_WK_PARQUET)
+    df["delivery_date"] = pd.to_datetime(df["delivery_date"]).astype("datetime64[us]")
+    return df.set_index("delivery_date").sort_index()
+
+
+def _da_publication(delivery_hour_utc: pd.Series, pub_hour_local: int) -> pd.Series:
+    """Publication deadline (UTC) of a day-ahead forecast: D-1 at pub_hour_local local."""
+    local = delivery_hour_utc.dt.tz_convert("Europe/Zurich")
+    pub_local = local.dt.normalize() - pd.Timedelta(days=1) + pd.Timedelta(hours=pub_hour_local)
+    return _to_utc_us(pub_local)
+
+
+def _entsoe_da_asof(da: pd.DataFrame | None, bid_times: pd.Series,
+                    delivery_times: pd.Series, col: str, pub_hour_local: int) -> pd.Series:
+    """Day-ahead value of `col` at each delivery hour, exposed only when its
+    publication deadline (D-1) is at or before the bid time. NaN otherwise."""
+    if da is None or col not in da.columns:
+        return pd.Series(np.nan, index=bid_times.index)
+    dh = _to_utc_us(delivery_times).dt.floor("h")
+    vals = pd.Series(dh.map(da[col]).values, index=bid_times.index)
+    avail = _da_publication(dh, pub_hour_local).values <= _to_utc_us(bid_times).values
+    return vals.where(avail)
+
+
+def _entsoe_week_asof(wk: pd.DataFrame | None, bid_times: pd.Series,
+                      delivery_times: pd.Series) -> tuple[pd.Series, pd.Series]:
+    """Week-ahead (max, min) load for each delivery local-day, exposed only when
+    the forecast (published the prior Friday ~10:00 local) precedes the bid."""
+    nan = pd.Series(np.nan, index=bid_times.index)
+    if wk is None:
+        return nan, nan
+    local = _to_utc_us(delivery_times).dt.tz_convert("Europe/Zurich")
+    del_date = pd.to_datetime(local.dt.date).astype("datetime64[us]")
+    maxv = pd.Series(del_date.map(wk["load_wk_max_mw"]).values, index=bid_times.index)
+    minv = pd.Series(del_date.map(wk["load_wk_min_mw"]).values, index=bid_times.index)
+    dow = pd.DatetimeIndex(del_date).dayofweek
+    monday = del_date - pd.to_timedelta(dow, unit="D")
+    fri_prev = monday - pd.Timedelta(days=3) + pd.Timedelta(hours=10)
+    pub_utc = _to_utc_us(fri_prev.dt.tz_localize(
+        "Europe/Zurich", ambiguous="infer", nonexistent="shift_forward"))
+    avail = pub_utc.values <= _to_utc_us(bid_times).values
+    return maxv.where(avail), minv.where(avail)
+
+
+def _entsoe_tre_features(bid_times: pd.Series, slot_times: pd.Series) -> pd.DataFrame:
+    """Full ENTSO-E feature block for TRE: day-ahead load/gen/solar (near slots)
+    plus the week-ahead load envelope (Fri→Mon gap), all point-in-time safe."""
+    da, wk = _load_entsoe_da(), _load_entsoe_week()
+    load_da  = _entsoe_da_asof(da, bid_times, slot_times, "load_da_mw",  pub_hour_local=12)
+    gen_da   = _entsoe_da_asof(da, bid_times, slot_times, "gen_da_mw",   pub_hour_local=18)
+    solar_da = _entsoe_da_asof(da, bid_times, slot_times, "solar_da_mw", pub_hour_local=18)
+    wind_da  = _entsoe_da_asof(da, bid_times, slot_times, "wind_da_mw",  pub_hour_local=18)
+    wk_max, wk_min = _entsoe_week_asof(wk, bid_times, slot_times)
+    return pd.DataFrame({
+        "entsoe_load_da_mw":      load_da,
+        "entsoe_gen_da_mw":       gen_da,
+        "entsoe_solar_da_mw":     solar_da,
+        "entsoe_net_load_da_mw":  load_da - solar_da - wind_da,
+        "entsoe_load_wk_max_mw":  wk_max,
+        "entsoe_load_wk_min_mw":  wk_min,
+        "entsoe_load_wk_spread_mw": wk_max - wk_min,
+    }, index=bid_times.index)
+
+
+def _entsoe_week_features(bid_times: pd.Series, delivery_times: pd.Series) -> pd.DataFrame:
+    """Week-ahead-only ENTSO-E block for TRL Daily (day-ahead never published in
+    time for a 2-business-day-ahead bid)."""
+    wk = _load_entsoe_week()
+    wk_max, wk_min = _entsoe_week_asof(wk, bid_times, delivery_times)
+    return pd.DataFrame({
+        "entsoe_load_wk_max_mw":    wk_max,
+        "entsoe_load_wk_min_mw":    wk_min,
+        "entsoe_load_wk_spread_mw": wk_max - wk_min,
+    }, index=bid_times.index)
+
+
 def _price_lags(df: pd.DataFrame, time_col: str, price_col: str,
                 lags: list[int], roll_windows: list[int] = (4, 12)) -> pd.DataFrame:
     """Compute integer-position lag features and rolling stats on sorted time series."""
@@ -690,6 +803,10 @@ def build_trl_daily_features() -> pd.DataFrame:
     price_lags    = pd.concat(lag_parts).reindex(prices.index)
     sb_price_lags = pd.concat(sb_lag_parts).reindex(prices.index)
 
+    # ENTSO-E CH load forecast (point-in-time): week-ahead only — the day-ahead
+    # forecast is published D-1, after a TRL Daily bid (2 business days ahead).
+    entsoe = _entsoe_week_features(bid_times, block_start)
+
     features = pd.concat([
         prices[["block_start", "direction", "marginal_chf",
                 "offered_mw", "awarded_mw", "award_rate_pct"]],
@@ -699,6 +816,7 @@ def build_trl_daily_features() -> pd.DataFrame:
         weekly_vals.set_index(prices.index),
         price_lags,
         sb_price_lags,
+        entsoe,
     ], axis=1)
 
     features = features.sort_values(["block_start", "direction"]).reset_index(drop=True)
@@ -826,6 +944,9 @@ def build_tre_features() -> pd.DataFrame:
         lag_parts.append(lag_df)
     price_lags = pd.concat(lag_parts).reindex(prices.index)
 
+    # ENTSO-E CH load/generation forecasts (point-in-time): day-ahead + week-ahead
+    entsoe = _entsoe_tre_features(bid_time, slot_time)
+
     features = pd.concat([
         prices[["slot_time", "direction", "marginal_chf",
                 "offered", "activated", "activation_rate"]],
@@ -834,6 +955,7 @@ def build_tre_features() -> pd.DataFrame:
         res.set_index(prices.index),
         price_lags,
         weekly_vals.set_index(prices.index),
+        entsoe,
     ], axis=1)
 
     features = features.sort_values(["slot_time", "direction"]).reset_index(drop=True)

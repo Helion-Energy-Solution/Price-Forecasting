@@ -32,6 +32,12 @@ Log "Step 1: refresh_prices.py (download + sync parquets)"
 & $Python src/data/refresh_prices.py 2>&1 | Tee-Object -Append $LogFile
 if ($LASTEXITCODE -ne 0) { Log "ERROR: refresh_prices.py failed (exit $LASTEXITCODE)"; exit 1 }
 
+# 1b. Refresh ENTSO-E CH load/generation forecasts (non-fatal: inference falls back to
+#     existing parquets / NaN if this fails or the token is missing)
+Log "Step 1b: entsoe_download.py (CH load + generation forecasts)"
+& $Python src/data/entsoe_download.py 2>&1 | Tee-Object -Append $LogFile
+if ($LASTEXITCODE -ne 0) { Log "WARNING: entsoe_download.py failed (exit $LASTEXITCODE) - using existing parquets" }
+
 # 2. Run inference
 Log "Step 2: inference.py"
 & $Python src/pipeline/inference.py 2>&1 | Tee-Object -Append $LogFile

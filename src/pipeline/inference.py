@@ -52,6 +52,7 @@ from src.data.feature_store import (
     _reservoir_asof, _load_spot_forecast, _spot_forecast_asof,
     _spot_week_features, _price_lags, _price_lags_same_block,
     _push_back_past_holidays, _swiss_holiday_set, _tre_bid_time, cos_zenith,
+    _entsoe_tre_features, _entsoe_week_features,
 )
 from src.data.ecds_download import process_opendata_run
 from src.models.trl_weekly_model import FEATURE_COLS_BY_DIRECTION as TW_FC
@@ -450,6 +451,9 @@ def infer_trl_daily(weather: pd.DataFrame, now: pd.Timestamp, cfg: dict) -> list
     lag_frames = {d: _daily_lags(d, block_start.reset_index(drop=True)) for d in ("up", "down")}
     res_cols = ["wallis_fill_pct", "graubuenden_fill_pct", "tessin_fill_pct", "totalch_fill_pct"]
 
+    # ENTSO-E CH week-ahead load forecast (point-in-time)
+    entsoe = _entsoe_week_features(bid_times, block_start)
+
     # Load models
     bundles = {}
     for direction in ("up", "down"):
@@ -473,6 +477,8 @@ def infer_trl_daily(weather: pd.DataFrame, now: pd.Timestamp, cfg: dict) -> list
                 row[col] = float(weekly_vals[col].iloc[i]) if col in weekly_vals.columns else np.nan
             for col in lag_frames[direction].columns:
                 row[col] = float(lag_frames[direction][col].iloc[i])
+            for col in entsoe.columns:
+                row[col] = float(entsoe[col].iloc[i])
             rows.append({c: row.get(c, np.nan) for c in fc})
         X_dir[direction] = pd.DataFrame(rows)
 
@@ -594,6 +600,9 @@ def infer_tre(weather: pd.DataFrame, now: pd.Timestamp, cfg: dict) -> list[dict]
 
     res_cols = ["wallis_fill_pct", "graubuenden_fill_pct", "tessin_fill_pct", "totalch_fill_pct"]
 
+    # ENTSO-E CH load/generation forecasts (point-in-time): day-ahead + week-ahead
+    entsoe = _entsoe_tre_features(bid_time, slot_time)
+
     # Precompute lags and batch feature matrices per direction
     lag_frames = {d: _tre_lags(d, slot_time.reset_index(drop=True)) for d in ("pos", "neg")}
 
@@ -612,6 +621,8 @@ def infer_tre(weather: pd.DataFrame, now: pd.Timestamp, cfg: dict) -> list[dict]
             row["trl_weekly_down_chf"] = float(weekly_vals["trl_weekly_down_chf"].iloc[i])
             for col in lag_frames[direction].columns:
                 row[col] = float(lag_frames[direction][col].iloc[i])
+            for col in entsoe.columns:
+                row[col] = float(entsoe[col].iloc[i])
             rows.append({c: row.get(c, np.nan) for c in TRE_FC})
         X_dir[direction] = pd.DataFrame(rows)
 

@@ -4,6 +4,7 @@ ecmwf-opendata
 cfgrib
 eccodes
 volue-insight-timeseries
+entsoe-py                 # ENTSO-E Transparency Platform client (CH load/generation forecasts)
 
 # Data handling
 pandas

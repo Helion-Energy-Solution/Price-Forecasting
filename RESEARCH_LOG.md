@@ -13,6 +13,7 @@ Add a new entry under **Experiments** each time you retrain and run the backtest
 | Prices | TRL Weekly, TRL Daily, TRE from Swissgrid / Helion dashboard |
 | Reservoir | Weekly fill % by region (Wallis, Graubünden, Tessin, CH total) |
 | Spot | EPEX day-ahead EUR/MWh, hourly |
+| ENTSO-E | CH load & generation forecasts (day-ahead hourly + week-ahead daily), point-in-time gated — `src/data/entsoe_download.py` |
 | Feature store | `src/data/feature_store.py` — aligns all sources on UTC index |
 | Models | LightGBM quantile regression, one per market × direction |
 | Bid strategy | `src/pipeline/bid_strategy.py` — pay-as-bid revenue optimiser |
@@ -68,6 +69,12 @@ TRL Daily prices follow a strong intraday pattern (the 12–16h block typically 
 
 ### Why use `FEATURE_COLS_BY_DIRECTION` for TRL Daily (and not a single shared list)?
 TRL Weekly S1 features (anticipated-auction results) are structurally absent for direction=up in every week — they only exist for the down auction in Feb–May. Including them in the UP feature list as constant-zero columns wastes tree splits and can introduce spurious interactions. The `FEATURE_COLS_BY_DIRECTION` pattern (UP uses the base list; DOWN adds direction-specific columns) keeps each model lean and ensures no constant features enter training. The same principle applies whenever a feature is structurally 0 or NaN for an entire sub-group.
+
+### Why drop rows only on the target/clearing column, not the full feature list? (EXP-009)
+LightGBM handles feature NaN natively (learned default branch). Dropping rows on `dropna(subset=feature_cols)` therefore discards usable training/evaluation rows for no benefit — and silently so. This bit us twice: the ~88%-NaN Volue spot revision stats (`spot_fcst_std`/`spot_fcst_change`) had quietly collapsed TRE training to ~9% of rows since EXP-006, and the by-design-NaN ENTSO-E day-ahead features (absent for far-horizon slots) compounded it to ~2%. The fix: `tre_model` and `bid_strategy.run_backtest` now drop only on `marginal_chf` / `clearing_col`. **Rule:** never `dropna` on a feature that LightGBM can tolerate; reserve row-dropping for the label (and the clearing price in backtests). Gate-and-fill (the S1 pattern) is only needed when a *constant* would mislead, not merely to avoid NaN.
+
+### ENTSO-E forecasts: publication-time gating and per-market reachability (EXP-009)
+ENTSO-E returns each archived forecast as a flat series indexed by delivery time with no publish timestamp. We reconstruct the publication deadline from the delivery date and expose a value only once it precedes the bid time (same leakage guard as `_spot_forecast_asof`). The bid lead times then determine reachability: TRE (bids close) gets day-ahead + week-ahead; TRL Daily (2 business days ahead) gets week-ahead only; TRL Weekly (bids Tuesday, before the Friday week-ahead publication) gets nothing. Far-horizon rows where the day-ahead forecast wasn't yet published fall back to week-ahead load (and, for PV, the existing `ssrd_proxy` weather feature) — the model is trained with the same NaN pattern so it learns the regime rather than being surprised at inference.
 
 ### Why fill S1 numeric columns with 0.0 instead of NaN for non-S1 rows?
 `run_backtest` calls `dropna(subset=feature_cols)` before scoring. If `s1_marginal_chf` is NaN for all UP rows and non-S1 DOWN weeks, all those rows are silently dropped — leaving only ~14 S1 rows per year in the backtest. The fix: fill with 0.0 when `s1_is_active=0`. LightGBM will first split on `s1_is_active` and route 0-filled rows to the inactive branch, so the zero is semantically correct (not noise injection). The same pattern applies to any future feature that is structurally absent for a subset of rows: gate with a binary flag, fill numeric columns with a neutral value.
@@ -303,15 +310,63 @@ TRL Weekly training uses three segments: train / es_val (~52 weeks, fixed 2025-0
 
 ---
 
+### EXP-009 — ENTSO-E load/generation forecast features + NaN-dropna fix
+**Date:** 2026-05-29
+
+**Changes from EXP-008:**
+- **New data source:** `src/data/entsoe_download.py` — downloads CH (`10YCH-SWISSGRIDZ`) forecasts from the ENTSO-E Transparency Platform via `entsoe-py`. Day-ahead hourly: total load (6.1.B), aggregated generation (14.1.C), wind+solar (14.1.D) → `entsoe_da.parquet`. Week-ahead daily min/max load (6.1.C) → `entsoe_load_week.parquet`. Backfilled 2023-01-01→now (29,903 hourly + 1,244 daily rows, ~0% NaN). Token in `.env` as `ENTSOE_API_TOKEN`. Added to `push_forecasts.ps1` as Step 1b (non-fatal).
+- **`feature_store.py` — point-in-time ENTSO-E features.** `_entsoe_da_asof` / `_entsoe_week_asof` model each forecast's publication deadline from the delivery date (DA load D-1 12:00 local; DA gen/solar D-1 18:00; week-ahead the prior Friday ~10:00) and expose a value only when it precedes the bid time. 
+  - **TRE:** `entsoe_load_da_mw`, `entsoe_gen_da_mw`, `entsoe_solar_da_mw`, `entsoe_net_load_da_mw` (load−solar−wind), plus week-ahead `entsoe_load_wk_max_mw`/`_min_mw`/`_spread_mw`.
+  - **TRL Daily:** week-ahead `entsoe_load_wk_max_mw`/`_min_mw`/`_spread_mw` only (DA forecast is published D-1, after the 2-business-day-ahead bid).
+  - **TRL Weekly:** none — bids Tuesday, before the week-ahead Friday publication, so no ENTSO-E forecast is leakage-safe.
+- **NaN-dropna fix (bug):** `tre_model.py` trained with `dropna(subset=["marginal_chf"] + FEATURE_COLS)` and `bid_strategy.run_backtest` filtered with `dropna(subset=[clearing_col] + feature_cols)`. Both dropped any row with NaN in a NaN-tolerant feature even though LightGBM handles NaN natively. The pre-existing `spot_fcst_std`/`spot_fcst_change` (~88% NaN, realized-price fallback) had already collapsed TRE pos training from 49,373 valid-price rows to **4,571** since EXP-006; the new far-horizon ENTSO-E NaN pushed it to **2,092** and biased the backtest to near-horizon slots. Both now drop on the target/clearing column only.
+- TRE and TRL Daily retrained. TRL Weekly **not retrained** for EXP-009 (no ENTSO-E features apply; its KPI/pinball below are from the same-day refreshed-data retrain, structurally identical to EXP-008).
+
+**Motivation:** Swiss system load and PV/generation are first-order drivers of balancing prices, and ENTSO-E publishes leakage-safe, historically-archived forecasts of them. The dropna fix was forced by the discovery that adding by-design-NaN features silently gutted TRE training — and revealed the same latent bug had been crippling TRE since the Volue spot features landed.
+
+⚠ **Two entangled changes + shifted val sets.** EXP-009 bundles the ENTSO-E features with the dropna fix, so their individual contributions cannot be separated from this run (see Q9). The dropna fix also changes backtest slot counts for all markets (TRE pos 1912→1164 is a composition change, not a regression), and val sets grew (TRL Daily 131→185 / 126→178). Δ capture is indicative, not controlled.
+
+| Market | capture_% | opt_select_% | opt_pnl/slot | oracle_pnl/slot | Δ capture vs EXP-008 |
+|---|---|---|---|---|---|
+| TRL Weekly up | 70.0 | 77.8 | 367.25 | 524.31 | −5.2 pp ⚠ noisy (9 slots, not retrained) |
+| TRL Weekly down | 36.2 | 33.3 | 410.08 | 1133.37 | +6.5 pp ⚠ noisy (9 slots, not retrained) |
+| TRL Daily up | 28.4 | 32.4 | 2.59 | 9.09 | −0.3 pp ≈ (val 131→185) |
+| TRL Daily down | 48.0 | 37.1 | 35.90 | 74.84 | −2.7 pp ⚠ (val grew; oracle 77.22→74.84) |
+| TRE pos | 47.1 | 61.1 | 80.64 | 171.24 | +0.6 pp — but model now properly trained (48k vs ~4.5k rows) |
+| TRE neg | 35.1 | 2.1 | 27.80 | 79.12 | +7.7 pp ⚠ extreme-dominated (677 slots) |
+
+**Pinball metrics** (retrained models only — TRE + TRL Daily; `pinball_kpi`, val window from 2026-05-01):
+
+| Model | direction | q10 (norm) | q25 (norm) | q50 (norm) | q75 (norm) | q90 (norm) | clf_auc |
+|---|---|---|---|---|---|---|---|
+| TRL Daily | up (185 slots) | 0.74 (0.081) | 1.63 (0.179) | 2.58 (0.284) | 3.27 (0.360) | 3.30 (0.363) | — |
+| TRL Daily | down (178 slots) | 5.13 (0.069) | 9.91 (0.132) | 15.03 (0.201) | 14.95 (0.200) | 11.80 (0.158) | — |
+| TRE | pos (1164 slots) | 6.74 (0.039) | 15.83 (0.092) | 27.71 (0.162) | 38.23 (0.223) | 38.57 (0.225) | 0.973 |
+| TRE | neg (677 slots) | 68.97 (3.37†) | 89.34 (4.37†) | 80.19 (3.92†) | 51.84 (2.53†) | 30.72 (1.50†) | 0.902 |
+
+For reference, TRL Weekly (not retrained for EXP-009; same-day refreshed-data fit) pinball_es over the fixed ~52w window: up q50 39.2 (0.158), down q50 314.1 (0.337) — consistent with EXP-008.
+
+**Notes:**
+- **TRE pos is the headline.** The dropna fix restored training from ~4,571 to **48,209 rows** and the classifier AUC jumped **0.712 → 0.973**; q50 pinball improved **39.7 → 27.71** (norm 0.471 → 0.162). Yet capture is ~flat (+0.6 pp). Calibration improved sharply while revenue capture did not — suggesting the bid/selection layer (not quantile accuracy) is now the binding constraint for TRE pos. Worth investigating the bid optimiser next.
+- **ENTSO-E features are pulling weight** (gain importance, separate from capture): in TRE pos normal q50, `entsoe_gen_da_mw` ranks 3rd (5.3%) and `entsoe_load_da_mw` 6th (3.5%); ENTSO-E ≈17% of total gain. In TRL Daily up, week-ahead load ranks 8–12. So the features are informative even though this run can't isolate their capture impact from the dropna fix.
+- **TRE neg** (677 slots, extreme-dominated) capture and the >1 normalised pinball (†) remain dominated by a small number of large extreme events; `|mean(y_val)|` is tiny relative to the −100…−300 CHF errors. Use absolute pinball + AUC (0.902) as the meaningful neg metrics.
+- **TRL Weekly** swings (±5–7 pp on 9 slots) are noise and not attributable to EXP-009 — no weekly features changed.
+- The discarded first EXP-009 backtest (pre-fix) reported TRE pos **56.2%** on 898 near-horizon-biased slots — an artefact of the row-dropping, not a real gain. The 47.1% on 1,164 full slots is the honest figure.
+
+---
+
 ## Open Questions
 
 | # | Question | Status |
 |---|---|---|
 | 1 | Add `ssrd_proxy = cos_zenith × (1 − cloud_cover_mean)` as explicit interaction feature? | ✅ Done — EXP-005 |
 | 2 | Apply same CV n_estimators approach to TRL Daily and TRE for consistency? | Open |
-| 3 | Add ACE / system load features to TRE pos (was 34% capture)? | Partially addressed — spot price raised TRE pos to ~46–47% in EXP-006/007; further gains from load/ACE still possible |
+| 3 | Add ACE / system load features to TRE pos (was 34% capture)? | Largely addressed — spot (EXP-006) + ENTSO-E load/generation forecasts (EXP-009, ~17% of TRE pos gain) added; ACE still open. Capture plateaued ~47% despite much better calibration — bid layer now suspected binding (see Q10) |
 | 4 | Extend val window for TRL Weekly down to reduce noise in capture% estimates? | Open |
 | 5 | Build inference pipeline (`src/pipeline/inference.py`) for live bidding? | ✅ Done — inference.py operational, running daily via GitHub Actions (`.github/workflows/daily_inference.yml`); outputs pushed to Market Dashboard repo |
 | 6 | Conformal prediction wrapper (MAPIE) for coverage-guaranteed intervals? | Planned |
 | 7 | Run `update_spot_forecast.py` daily to grow the Volue revision signal (spot_fcst_std / spot_fcst_change currently ~90% NaN in training) | Open — schedule or add to data update notebook cell |
 | 8 | TRL Daily up regression in EXP-008 (−7.1 pp): is it caused by same-block rolling NaN fill behaviour, VWAP/volume noise for UP, or statistical variance? Consider ablation: retrain with only same-block rolling (no VWAP/volume) vs only VWAP/volume to isolate the cause. | Open |
+| 9 | EXP-009 bundles ENTSO-E features with the dropna fix. Ablate to isolate: (a) dropna fix only (no ENTSO-E features), (b) + ENTSO-E. Quantifies the genuine feature lift vs the training-data-recovery effect. | Open |
+| 10 | TRE pos: q50 pinball improved 39.7→27.7 and AUC 0.71→0.97 (EXP-009) but capture stayed ~47%. Is the bid/selection optimiser (`_opt_bid_pos`), not calibration, the binding constraint? Inspect bid-vs-clearing distribution. | Open |
+| 11 | Add ENTSO-E month-ahead load forecast (6.1.D, weekly min/max) as the only forecast that reaches TRL Weekly's Tuesday bid horizon? Coarse, but TRL Weekly currently gets no ENTSO-E signal. | Open |

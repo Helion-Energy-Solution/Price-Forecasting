@@ -62,6 +62,9 @@ FEATURE_COLS = [
     "marginal_chf_roll96_mean", "marginal_chf_roll96_std",
     "marginal_chf_roll672_mean", "marginal_chf_roll672_std",
     "trl_weekly_up_chf", "trl_weekly_down_chf",
+    # ENTSO-E CH forecasts (point-in-time): day-ahead for near slots, week-ahead for the Fri->Mon gap
+    "entsoe_load_da_mw", "entsoe_gen_da_mw", "entsoe_solar_da_mw", "entsoe_net_load_da_mw",
+    "entsoe_load_wk_max_mw", "entsoe_load_wk_min_mw", "entsoe_load_wk_spread_mw",
 ]
 
 
@@ -94,7 +97,11 @@ def train():
 
     for direction in ("pos", "neg"):
         sub = df[df["direction"] == direction].copy()
-        sub = sub[sub["slot_time"] >= train_start].dropna(subset=["marginal_chf"] + FEATURE_COLS)
+        # Drop only on the target — LightGBM handles feature NaN natively. Dropping on
+        # FEATURE_COLS would discard every row where a NaN-tolerant feature is absent
+        # (spot revision stats ~88% NaN pre-2026; ENTSO-E day-ahead NaN for far-horizon
+        # slots), collapsing the training set to a near-horizon 2026 sliver.
+        sub = sub[sub["slot_time"] >= train_start].dropna(subset=["marginal_chf"])
 
         is_ext = _extreme_mask(sub["marginal_chf"], direction)
 

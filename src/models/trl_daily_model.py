@@ -54,6 +54,8 @@ FEATURE_COLS = [
     "marginal_chf_sb_roll28_mean", "marginal_chf_sb_roll28_std",
     "trl_weekly_up_chf", "trl_weekly_up_vwap_chf", "trl_weekly_up_awarded_mw",
     "trl_weekly_down_chf", "trl_weekly_down_vwap_chf", "trl_weekly_down_awarded_mw",
+    # ENTSO-E CH week-ahead load (day-ahead is published after a 2-day-ahead TRL Daily bid)
+    "entsoe_load_wk_max_mw", "entsoe_load_wk_min_mw", "entsoe_load_wk_spread_mw",
 ]
 
 # S1 awarded volume only for down — constant 0 for up (no anticipated auction exists).

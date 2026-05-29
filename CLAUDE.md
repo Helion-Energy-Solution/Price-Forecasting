@@ -82,7 +82,7 @@ Price Forecasting/
 │   ├── raw/
 │   │   ├── ecmwf/          # ECMWF Open Data GRIB2 downloads (temp, deleted after extraction)
 │   │   ├── prices/         # TRL weekly, TRL daily, TRE price parquets
-│   │   └── market/         # Spot prices, load, RES, ACE
+│   │   └── market/         # Volue spot forecast, reservoir levels, ENTSO-E forecasts
 │   └── processed/
 │       ├── features/       # Parquet feature store
 │       └── targets/        # Aligned price targets
@@ -96,7 +96,8 @@ Price Forecasting/
 │   │   ├── ecds_download.py     # ECMWF historical ENS download (training only)
 │   │   ├── weather_features.py  # GRIB2 feature extraction
 │   │   ├── feature_store.py     # Align weather, market, price on common UTC index
-│   │   └── refresh_prices.py    # Daily price refresh from Swissgrid
+│   │   ├── refresh_prices.py    # Daily price refresh from Swissgrid
+│   │   └── entsoe_download.py   # ENTSO-E CH load/generation forecast download
 │   ├── models/
 │   │   ├── trl_weekly_model.py
 │   │   ├── trl_daily_model.py
@@ -127,6 +128,7 @@ cdsapi                  # ECDS/CDS API client (historical TIGGE downloads)
 ecmwf-opendata          # ECMWF Open Data client (real-time ENS, no auth)
 cfgrib                  # GRIB2 parsing
 eccodes                 # GRIB2 backend (C library must be on PATH)
+entsoe-py               # ENTSO-E Transparency Platform (CH load/generation forecasts)
 
 # Data handling
 pandas
@@ -207,14 +209,51 @@ week_start (datetime64[us]) | direction (up/down) | offered_mw | awarded_mw | ma
 
 ---
 
+### Load & generation forecasts — ENTSO-E
+
+Source: ENTSO-E Transparency Platform (CH = `10YCH-SWISSGRIDZ`), via `entsoe-py`. Archived back to 2015; we backfill from 2023-01-01. Requires a free API token in `.env` as `ENTSOE_API_TOKEN` (request "Restful API access" from `transparency@entsoe.eu`).
+
+**Refresh:** `src/data/entsoe_download.py` — incremental refresh by default (fetches a forward window to today+8d to catch newly published day-ahead/week-ahead forecasts); `--start 2023-01-01` for a full historical backfill. Run automatically by `push_forecasts.ps1` (Step 1b) before inference; run manually before retraining.
+
+**Data items pulled:**
+
+| Item | ENTSO-E code | `process_type` | Resolution |
+|---|---|---|---|
+| Total load forecast, day-ahead | 6.1.B | A01 | hourly |
+| Aggregated generation forecast, day-ahead | 14.1.C | A01 | hourly |
+| Wind & solar generation forecast, day-ahead | 14.1.D | A01 | hourly |
+| Total load forecast, week-ahead | 6.1.C | A31 | daily (max+min) |
+
+**Parquet schemas:**
+
+`data/raw/market/entsoe_da.parquet`
+```
+delivery_time (datetime64[us, UTC]) | load_da_mw | gen_da_mw | solar_da_mw | wind_da_mw
+```
+
+`data/raw/market/entsoe_load_week.parquet`
+```
+delivery_date (datetime64[us], local midnight) | load_wk_max_mw | load_wk_min_mw
+```
+
+**Point-in-time / leakage:** ENTSO-E returns each archived forecast as a flat series with no publish timestamp. `feature_store.py` models the publication deadline from the delivery date — day-ahead load D-1 ~12:00 local, day-ahead gen/solar D-1 18:00, week-ahead the prior Friday ~10:00 local — and exposes a value only once that deadline ≤ bid time (mirrors `_spot_forecast_asof`).
+
+**Reachability by market** (driven by bid lead times):
+- **TRE** — bids land close, so day-ahead load/gen/solar cover the near slots; week-ahead load fills the Friday→Monday gap. Full feature set.
+- **TRL Daily** — bids 2 business days ahead, before the D-1 day-ahead publication → only **week-ahead load** is available.
+- **TRL Weekly** — bids Tuesday, before the week-ahead Friday publication → **no** ENTSO-E forecast is leakage-safe; not used.
+
+---
+
 ### Market data
 
-| Variable | Granularity | Source |
-|---|---|---|
-| Spot prices | Hourly | EPEX Spot (via Market Dashboard pipeline) |
-| System load | 15-min | Swissgrid transparency |
-| RES generation (solar, wind) | 15-min | Swissgrid transparency |
-| Grid imbalance / ACE | 15-min | Swissgrid transparency |
+| Variable | Granularity | Source | Status |
+|---|---|---|---|
+| Spot prices | Hourly | EPEX realized + Volue forecast | **implemented** (`spot_forecast_volue.parquet`, `spot_hourly.parquet`) |
+| Hydro reservoir fill | Weekly | Swissgrid / BFE | **implemented** (`reservoir_levels.parquet`) |
+| Load & generation forecast | Hourly / daily | ENTSO-E (see above) | **implemented** (`entsoe_da.parquet`, `entsoe_load_week.parquet`) |
+| System load (actual) | 15-min | Swissgrid transparency | not yet wired in |
+| Grid imbalance / ACE | 15-min | Swissgrid transparency | not yet wired in |
 
 ---
 
@@ -244,12 +283,18 @@ week_start (datetime64[us]) | direction (up/down) | offered_mw | awarded_mw | ma
 - Lead-time-adjusted spread: spread at 24h vs 72h lead and their ratio
 - Assigned to models by relevant horizon bands (see step resolution table above)
 
-### Market features
-- Spot prices: lagged hourly values, daily min/max/spread
-- Current system load and 24h lag
-- Solar generation, 24h lag
-- ACE (area control error) — recent 1h mean and std (TRE only)
-- Accepted TRL/TRE volumes, lagged
+### Market features (implemented)
+- Spot prices: point-in-time Volue forecast (realized EPEX fallback), forecast revision std/change, weekly aggregates for TRL Weekly
+- Hydro reservoir fill % (Wallis, Graubünden, Tessin, total CH), as-of bid time
+- Cross-model: TRL Weekly clearing prices fed to TRL Daily and TRE
+
+### ENTSO-E forecast features (implemented, point-in-time)
+- **TRE:** `entsoe_load_da_mw`, `entsoe_gen_da_mw`, `entsoe_solar_da_mw`, `entsoe_net_load_da_mw` (load − solar − wind), plus week-ahead `entsoe_load_wk_max_mw` / `_min_mw` / `_spread_mw`
+- **TRL Daily:** week-ahead `entsoe_load_wk_max_mw` / `_min_mw` / `_spread_mw` only
+- Far-horizon rows where the day-ahead forecast was not yet published fall back to week-ahead (load) or NaN (gen/solar), which LightGBM routes through its NaN branch
+
+### Not yet wired in
+- Actual system load, RES generation, ACE, accepted volumes (sources identified; not in the feature store)
 
 ---
 
@@ -281,6 +326,7 @@ The KPI reported alongside pinball loss is **capture%** = backtest P&L / oracle 
 - **Input weather:** Steps 0–120h (6h resolution)
 - **Target quantiles:** q10, q25, q50, q75, q90
 - **Spot feature:** Yes
+- **ENTSO-E feature:** Week-ahead CH load forecast (max/min/spread) — day-ahead is published after the 2-business-day-ahead bid, so not usable here
 
 ### TRE model (two-stage)
 - **Train start:** 2023-01-01
@@ -293,6 +339,7 @@ The KPI reported alongside pinball loss is **capture%** = backtest P&L / oracle 
 - **Additional feature:** TRL Daily quantile forecast for the enclosing 4h block
 - **Target quantiles:** q10, q25, q50, q75, q90
 - **Spot feature:** Yes
+- **ENTSO-E feature:** Day-ahead CH load/generation/solar + net load (near slots) and week-ahead load (Fri→Mon gap), point-in-time gated
 
 ### Conformal prediction wrapper
 All three models wrapped with MAPIE's `TimeSeriesSplit`-compatible conformal wrapper for coverage-guaranteed prediction intervals.
@@ -364,6 +411,8 @@ paths:
 ```
 Step 1  refresh_prices.py   — download TRE + SRL&TRL CSVs from Swissgrid,
                               append new rows to price parquets
+Step 1b entsoe_download.py  — refresh CH load/generation forecasts from ENTSO-E
+                              (non-fatal: inference falls back to existing parquets)
 Step 2  inference.py        — download today's ECMWF Open Data 00z run,
                               run all three models, write JSON to output/forecasts/
 Step 3  copy JSONs          — copy 3 JSON files to Market Dashboard repo
@@ -379,5 +428,7 @@ Step 4  git commit + push   — if forecasts changed, push to GitHub
 
 **Retraining workflow:**
 1. Run `python src/data/refresh_prices.py` to pull latest prices into parquets
-2. Update `training.end_date` (and optionally `val_start`) in `config/config.yaml`
-3. Re-run training notebooks / `src/pipeline/train.py`
+2. Run `python src/data/entsoe_download.py` to pull latest CH load/generation forecasts
+3. Update `training.end_date` (and optionally `val_start`) in `config/config.yaml`
+4. Rebuild features: `python src/data/feature_store.py`
+5. Re-run training notebooks / `src/pipeline/train.py`
