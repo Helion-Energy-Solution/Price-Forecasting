@@ -1,0 +1,36 @@
+#!/bin/sh
+# Keep local commits from including data the daily GitHub Action owns.
+#
+# Why: .github/workflows/daily_inference.yml refreshes and commits data/raw/**
+# and data/processed/features/weather_ensemble.parquet every day. When a local
+# notebook rerun also refreshes those (binary) parquets and they get committed,
+# the next pull collides with the Action's commit — binary parquets can't be
+# text-merged, so every overlap is a manual conflict.
+#
+# This hook unstages those paths from LOCAL commits, so only the Action ever
+# commits refreshed data. Your models (models/**), code, notebook, RESEARCH_LOG,
+# and backtest results commit as normal.
+#
+# In CI the Action MUST be allowed to commit data — skip there.
+# To force a local data commit (e.g. a one-time backfill):  git commit --no-verify
+
+if [ "$GITHUB_ACTIONS" = "true" ] || [ "$CI" = "true" ]; then
+    exit 0
+fi
+
+PATHS="data/raw data/processed/features"
+staged=$(git diff --cached --name-only -- $PATHS)
+
+if [ -n "$staged" ]; then
+    git restore --staged -- $PATHS 2>/dev/null || git reset -q HEAD -- $PATHS
+    echo "pre-commit: unstaged Action-owned data (use 'git commit --no-verify' to override):"
+    printf '  %s\n' $staged
+    # If data was the only thing staged, abort instead of creating an empty commit
+    # (git's empty-commit guard runs before this hook, so we must stop it here).
+    if git diff --cached --quiet; then
+        echo "pre-commit: nothing left to commit after removing data — aborting."
+        exit 1
+    fi
+fi
+
+exit 0

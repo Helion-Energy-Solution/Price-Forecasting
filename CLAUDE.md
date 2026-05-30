@@ -435,3 +435,18 @@ Runs as a **GitHub Actions workflow** — `.github/workflows/daily_inference.yml
 3. Update `training.end_date` (and optionally `val_start`) in `config/config.yaml`
 4. Rebuild features: `python src/data/feature_store.py`
 5. Re-run training notebooks / `src/pipeline/train.py`
+
+**Data ownership & the pre-commit hook**
+
+The daily Action is the **sole committer of refreshed data**: `data/raw/**` and
+`data/processed/features/weather_ensemble.parquet`. A local notebook rerun also
+rewrites those (binary) parquets; if they get committed locally they collide with
+the Action's daily commit (binary parquets can't be merged → manual conflict every
+time). To prevent that, `.githooks/pre-commit` unstages `data/raw/` and
+`data/processed/features/` from **local** commits (it's skipped in CI, so the Action
+still commits data normally). Your models, code, notebook, RESEARCH_LOG, and
+backtest results commit as usual.
+
+- Enable once per clone: `git config core.hooksPath .githooks`
+- Force a deliberate local data commit (e.g. a one-time backfill): `git commit --no-verify`
+- If you retrain locally, commit only `models/**` + `config.yaml` + `RESEARCH_LOG.md`; let the next Action run refresh the data parquets.
