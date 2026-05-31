@@ -424,10 +424,39 @@ Runs as a **GitHub Actions workflow** — `.github/workflows/daily_inference.yml
 
 **Required GitHub secrets:** `VOLUE_CLIENT_ID`, `VOLUE_CLIENT_SECRET`, `ENTSOE_API_TOKEN`, `MARKET_DASHBOARD_PAT`.
 
-**Market Dashboard integration:**
-- GitHub: `https://github.com/Helion-Energy-Solution/Market-Dashboard`
-- Forecast JSONs land in `data/forecasts/` (trl_weekly_latest.json, trl_daily_latest.json, tre_latest.json)
-- The Market Dashboard's own GitHub Actions workflow (`patch_data.py`, runs at 01:00 and 10:00 UTC) independently keeps historical price data fresh on the website
+### Market Dashboard integration (cross-repo data flow)
+
+Two repos with split responsibilities:
+- **Price Forecasting (this repo)** — owns models + forecasts. Produces the three `*_latest.json` and pushes them to the dashboard.
+- **Market-Dashboard** — owns realized prices, the forecast archive, the backtest join, and the public site (Vercel).
+  - GitHub: `https://github.com/Helion-Energy-Solution/Market-Dashboard`
+  - Local clone: `C:\Users\ThijsAntoniedeBoer\OneDrive - HELION\Dokumente\Market Dashboard`
+
+```
+THIS REPO (daily_inference.yml, 10:00 UTC)
+  inference.py → output/forecasts/{trl_weekly,trl_daily,tre}_latest.json
+       │  (step 7: clone Market-Dashboard, copy the 3 JSONs to data/forecasts/, commit+push)
+       ▼
+MARKET-DASHBOARD (update.yml, 01:00 + 10:00 UTC → patch_data.py → build_backtest.py)
+  patch_data.py        — pull realized TRE/TRL/spot from Swissgrid → data/data.json
+  build_backtest.py:
+    archive_forecasts()    — append each *_latest.json as one line to
+                             data/forecasts/history/{...}_history.jsonl
+                             (one record per run, deduped by generated_at)
+    build_*_backtest()     — for each slot/block/week, pick the most recent archived
+                             forecast with generated_at < bid_deadline, join it with the
+                             realized price → data/forecasts/backtest_*.json
+                             + embed under data.json["backtests"]
+       ▼
+  index.html (Vercel)  — reads data/data.json: live forecast (*_latest.json), realized
+                         prices, and the forecast-vs-realized backtests
+```
+
+**Key invariants (learned the hard way — violating them silently breaks the backtest):**
+- **Point-in-time archival.** `*_latest.json` holds only *future biddable* slots and is overwritten every run. A slot's forecast must be archived into `*_history.jsonl` **while it is still in the future**, or it can never enter the backtest — the realized price will appear in the price overview but the backtest row will be permanently absent. (The forecast-history mechanism began ~2026-05-28; earlier slots needed git-history recovery.)
+- **TRE archives the full window.** `archive_forecasts()` keeps all slots for TRE (`slot_limit = None`); the Fri→Mon window is ~260 slots (a former 96-slot/24h cap dropped weekend forecasts).
+- **The backtest shows a market as soon as it *clears*, not when it delivers.** TRL Weekly (and Daily) capacity auctions clear days before delivery; `build_trl_weekly_backtest` includes any week whose clearing price is published, not only already-delivered weeks.
+- **The dashboard owns realized data; this repo owns forecasts/models.** Don't commit `data/raw/**` locally (see the pre-commit hook below) — the dashboard's `patch_data.py` is the source of truth for realized prices.
 
 **Retraining workflow:**
 1. Run `python src/data/refresh_prices.py` to pull latest prices into parquets
